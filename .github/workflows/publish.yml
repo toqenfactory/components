@@ -19,6 +19,9 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           scope: "@toqen"
 
+      - name: Install packages
+        run: npm i
+
       - name: Copy README to components directory
         run: cp README.md ./src/react/
 
