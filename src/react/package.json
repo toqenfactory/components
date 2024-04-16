@@ -1,0 +1,17 @@
+{
+  "name": "@toqen/react",
+  "private": false,
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.29.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "viem": "2.x",
+    "wagmi": "^2.5.19"
+  }
+}

@@ -1,0 +1,33 @@
+name: Publish Package
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          registry-url: "https://registry.npmjs.org"
+          scope: "@toqen"
+
+      - name: Copy README to components directory
+      run: cp README.md ./src/react/
+
+      - name: Build package
+        run: npm run build
+        working-directory: ./src/react
+
+      - name: Publish to npm
+        run: npm publish --access public --no-git-checks
+        working-directory: ./src/react
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
