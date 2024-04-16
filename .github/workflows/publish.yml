@@ -20,7 +20,7 @@ jobs:
           scope: "@toqen"
 
       - name: Copy README to components directory
-      run: cp README.md ./src/react/
+        run: cp README.md ./src/react/
 
       - name: Build package
         run: npm run build
