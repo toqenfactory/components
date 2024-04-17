@@ -7,6 +7,11 @@ export default {
   theme: {
     extend: {},
   },
+  variants: {
+    extend: {
+      textColor: ['group-hover'], // Enable group-hover for text color utilities
+    },
+  },
   plugins: [require("daisyui")],
 }
 

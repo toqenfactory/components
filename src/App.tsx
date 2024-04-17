@@ -192,14 +192,19 @@ function App() {
         Approve All ERC721
       </button>
       <dialog id="modal" className="modal w-full">
-        <div className="modal-box w-full">
-          <form method="dialog">
-            <button className="btn btn-sm btn-circle btn-ghost absolute right-6 top-6">
-              ✕
-            </button>
-          </form>
-          <h3 className="text-lg">{title}</h3>
-          <div className="flex justify-center items-center">{component}</div>
+        <div className="modal-box w-11/12 max-w-5xl m-0 p-0">
+          <div className="relative">
+            <form method="dialog">
+              <button className="btn btn-sm btn-circle btn-ghost absolute right-4 top-0">
+                ✕
+              </button>
+            </form>
+            <h3 className="text-lg font-extrabold ml-4 my-4">{title}</h3>
+            <hr />
+          </div>
+          <div className="flex justify-center items-center m-4">
+            {component}
+          </div>
         </div>
       </dialog>
     </div>
