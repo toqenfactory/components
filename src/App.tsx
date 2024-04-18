@@ -200,7 +200,7 @@ function App() {
               </button>
             </form>
             <h3 className="text-lg font-extrabold ml-4 my-4">{title}</h3>
-            <hr />
+            <hr className="border-1 border-slate-200 dark:border-slate-700" />
           </div>
           <div className="flex justify-center items-center m-4">
             {component}

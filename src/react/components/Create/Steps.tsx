@@ -15,14 +15,14 @@ const Steps = ({ step }: { step: number }) => {
             className={`flex items-center justify-center gap-2 p-4 ${
               step === 1
                 ? `bg-slate-100 text-slate-950 dark:bg-slate-950 dark:text-slate-50`
-                : `bg-slate-50 text-slate-600 dark:bg-slate-900 dark:text-slate-400`
+                : `bg-slate-50 text-slate-500 dark:bg-slate-900 dark:text-slate-400`
             }`}
           >
             <span
               className={`w-10 h-10 ${
                 step === 1
                   ? `text-slate-950 dark:text-slate-50`
-                  : `text-slate-600 dark:text-slate-400`
+                  : `text-slate-500 dark:text-slate-400`
               }`}
             >
               <IconInfoOutline />
@@ -38,7 +38,7 @@ const Steps = ({ step }: { step: number }) => {
             className={`relative flex items-center justify-center gap-2 p-4 ${
               step === 2
                 ? `bg-slate-100 text-slate-950 dark:bg-slate-950 dark:text-slate-50`
-                : `bg-slate-50 text-slate-600 dark:bg-slate-900 dark:text-slate-400`
+                : `bg-slate-50 text-slate-500 dark:bg-slate-900 dark:text-slate-400`
             }`}
           >
             <span
@@ -71,7 +71,7 @@ const Steps = ({ step }: { step: number }) => {
               className={`w-10 h-10 ${
                 step === 2
                   ? `text-slate-950 dark:text-slate-50`
-                  : `text-slate-600 dark:text-slate-400`
+                  : `text-slate-500 dark:text-slate-400`
               }`}
             >
               <IconCloudSnow />
@@ -87,14 +87,14 @@ const Steps = ({ step }: { step: number }) => {
             className={`flex items-center justify-center gap-2 p-4 ${
               step === 3
                 ? `bg-slate-100 text-slate-950 dark:bg-slate-950 dark:text-slate-50`
-                : `bg-slate-50 text-slate-600 dark:bg-slate-900 dark:text-slate-400`
+                : `bg-slate-50 text-slate-500 dark:bg-slate-900 dark:text-slate-400`
             }`}
           >
             <span
               className={`w-10 h-10 ${
                 step === 3
                   ? `text-slate-950 dark:text-slate-50`
-                  : `text-slate-600 dark:text-slate-400`
+                  : `text-slate-500 dark:text-slate-400`
               }`}
             >
               <IconLayers />
