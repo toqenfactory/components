@@ -233,7 +233,9 @@ const Mint = ({
   useEffect(() => {
     if (status === "success") {
       setAmount("");
-      setIds(1);
+      setIds((ids) =>
+        BigInt(ids ?? 0) + (totalSupply ?? 0n) >= (maxSupply ?? 0) ? 0 : 1
+      );
       setEth("");
       refetch();
       refetchBalance();
@@ -256,7 +258,7 @@ const Mint = ({
           )
         : "0";
 
-    setEth(eth);
+    if (isNFT) setEth(eth);
   }, [tokenPrice, ids]);
 
   const handleMint = useCallback(() => {
