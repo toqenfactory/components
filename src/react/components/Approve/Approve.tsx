@@ -9,12 +9,14 @@ import { parseUnits } from "viem";
 import IconCheckSquare from "./icons/IconCheckSquare";
 import IconEdit from "./icons/IconEdit";
 import { Steps } from "./Steps";
-import { ActionButton } from "./ActionButton";
+import { Button } from "./Button";
 
 import { abi } from "./utils";
 import { Info, Nft, Spender, Token } from "./Rows";
 import { Skeleton } from "./Skeleton";
 import { IApprove, IArgs, IFunctionName, IMetadata, IStatus } from "./IApprove";
+import Mint from "../Mint";
+import MintNFT from "../Mint/MintNFT";
 
 const Approve = ({
   address,
@@ -32,11 +34,13 @@ const Approve = ({
     [to, operator, spender]
   );
 
-  const [status, setStatus] = useState<IStatus>();
+  const [isMint, setIsMint] = useState<boolean | undefined>(false);
+
+  const [status, setStatus] = useState<IStatus>("idle");
   const [functionName, setFunctionName] = useState<IFunctionName>();
   const [args, setArgs] = useState<IArgs>();
   const [metadata, setMetadata] = useState<IMetadata>();
-  const [tokenNotFound, setTokenNotFound] = useState<boolean>(false);
+  const [isApprove, setIsApprove] = useState<boolean | undefined>();
 
   const {
     writeContract,
@@ -45,8 +49,6 @@ const Approve = ({
     error,
   } = useWriteContract(); // offChain: idle -> pending -> success
   const { status: onChain } = useWaitForTransactionReceipt({ hash }); // onChain: pending -> success
-
-  console.log("Approve error", error);
 
   const contracts: any = useMemo(() => {
     const contract = { address, abi } as const;
@@ -59,7 +61,7 @@ const Approve = ({
       {
         ...contract,
         functionName: "isApprovedForAll",
-        args: [accountAddress, operator],
+        args: [accountAddress, operator ?? to],
       },
       {
         ...contract,
@@ -107,21 +109,22 @@ const Approve = ({
     [getApproved, isApprovedForAll, allowance]
   );
 
-  const isApproved = useMemo(() => {
-    let isApproved = false;
-    if (getApproved !== undefined && addr !== undefined) {
-      isApproved = getApproved === addr;
-    } else if (allowance !== undefined && value !== undefined) {
-      isApproved = allowance >= parseUnits(value, 18);
-    } else if (isApprovedForAll !== undefined) {
-      isApproved = isApprovedForAll;
-    }
-    return isApproved;
-  }, [getApproved, isApprovedForAll, allowance, addr, value]);
+  const isDone = useMemo(() => {
+    let isDone = false;
 
-  useEffect(() => {
-    setTokenNotFound(getApproved === undefined && tokenId !== undefined);
-  }, [getApproved, tokenId]);
+    if (isApprovedForAll !== undefined && approved !== undefined) {
+      isDone = isApprovedForAll === approved;
+    } else if (getApproved !== undefined && addr !== undefined) {
+      isDone = isApprovedForAll || getApproved === addr;
+    } else if (allowance !== undefined && value !== undefined) {
+      isDone = allowance >= parseUnits(value, 18);
+    }
+
+    setIsApprove(approved ?? true);
+    setStatus(isDone ? "success" : "idle");
+
+    return isDone;
+  }, [getApproved, isApprovedForAll, allowance, approved, addr, value]);
 
   useEffect(() => {
     if (to !== undefined && tokenId !== undefined) {
@@ -134,7 +137,9 @@ const Approve = ({
       setFunctionName("setApprovalForAll");
       setArgs([operator, approved]);
     }
-  }, [to, tokenId, operator, approved, spender, value]);
+
+    refetch();
+  }, [address, to, tokenId, operator, approved, spender, value]);
 
   useEffect(() => {
     if (offChain === "error" || onChain === "error") {
@@ -144,11 +149,6 @@ const Approve = ({
     if (onChain === "pending") {
       if (offChain === "idle") {
         handle({ data: undefined, status: "idle" });
-        if (isApproved && status !== "success") {
-          setStatus("success");
-        } else {
-          setStatus("idle");
-        }
       } else if (offChain === "pending") {
         handle({ data: undefined, status: "wallet" });
         setStatus("wallet");
@@ -162,20 +162,20 @@ const Approve = ({
       setStatus("success");
       refetch();
     }
-  }, [offChain, onChain, isApproved]);
+  }, [offChain, onChain]);
 
   useEffect(() => {
     if (tokenURI === undefined) return;
 
     const fetchMetadata = async () => {
       const response = await fetch(
-        `https://dweb.link/ipfs/${tokenURI.replace(/ipfs:\/\//g, "")}`
+        `https://ipfs.io/ipfs/${tokenURI.replace(/ipfs:\/\//g, "")}`
       );
 
       if (!response.ok) return;
       const metadata = await response.json();
       metadata.image = /^ipfs/.test(metadata.image)
-        ? `https://dweb.link/ipfs/${metadata.image.replace(/ipfs:\/\//g, "")}`
+        ? `https://ipfs.io/ipfs/${metadata.image.replace(/ipfs:\/\//g, "")}`
         : metadata.image;
 
       setMetadata(metadata);
@@ -184,84 +184,100 @@ const Approve = ({
     fetchMetadata();
   }, [tokenURI]);
 
-  useEffect(() => {
-    refetch();
-  }, [address, to, tokenId, operator, approved, spender, value]);
-
   const handleApprove = useCallback(() => {
     if (!address || !functionName || !args) return;
     writeContract({ abi, address, functionName, args });
   }, [address, functionName, args]);
 
+  if (!address)
+    return (
+      <div className="flex justify-center items-center text-slate-700 dark:text-slate-500 text-xl font-extrabold">
+        Token Address Not Found
+      </div>
+    );
+
+  if (getApproved === undefined && tokenId !== undefined)
+    return (
+      <div className="min-w-96 flex flex-col gap-2">
+        {!isMint && (
+          <div className="flex flex-col justify-center items-center gap-4 text-slate-700 dark:text-slate-500 text-xl font-extrabold">
+            <div>Token #{tokenId} Not Found</div>
+            <div className="w-full">
+              <Button
+                defaultText="Mint NFT"
+                defaultIcon={<IconEdit />}
+                handle={() => {
+                  setIsMint(true);
+                }}
+              />
+            </div>
+          </div>
+        )}
+        {isMint && (
+          <MintNFT
+            address={address}
+            handle={({ data, status }) => {
+              console.log("data", data);
+              console.log("status", status);
+              if (status === "success") {
+                refetch();
+                setIsMint(false);
+              }
+            }}
+          />
+        )}
+      </div>
+    );
+
+  if (isLoading) return <Skeleton isOneNft={tokenId !== undefined} />;
+
   return (
     <div className="min-w-96 flex flex-col gap-2">
-      {!address ? (
-        <div className="flex justify-center items-center text-slate-700 text-xl font-extrabold">
-          Token Address Not Found
-        </div>
-      ) : (
-        isLoading &&
-        (tokenNotFound ? (
-          <div className="flex justify-center items-center text-slate-700 text-xl font-extrabold">
-            Token #{tokenId} Not Found
-          </div>
-        ) : (
-          <Skeleton isOneNft={tokenId !== undefined} />
-        ))
-      )}
-      {!isLoading && (
+      <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-4">
-            <div>
-              <Steps status={status} />
-            </div>
-            <div className="flex gap-2">
-              <div className="flex-none">
-                {tokenId && <Nft metadata={metadata} />}
-              </div>
-              <div className="flex-1 flex items-center">
-                <ul
-                  role="list"
-                  className="list-none space-y-3 text-slate-400 w-full"
-                >
-                  <li>
-                    {functionName === "setApprovalForAll" && (
-                      <Info isApproved={isApproved} />
-                    )}
-                    {functionName === "approve" && (
-                      <Info
-                        isApproved={isApproved}
-                        tokenId={tokenId}
-                        value={value}
-                        symbol={symbol}
-                      />
-                    )}
-                  </li>
-                  <li>
-                    <Token
-                      addr={address}
-                      title={value !== undefined ? `Token` : `Collection`}
-                    />
-                  </li>
-                  <li>
-                    <Spender addr={addr} />
-                  </li>
-                </ul>
-              </div>
-            </div>
+          <div>
+            <Steps status={status} />
           </div>
-          <div className="w-full">
-            <ActionButton
-              defaultText="Approve"
-              successText="Done"
-              defaultIcon={<IconEdit />}
-              successIcon={<IconCheckSquare />}
-              status={status}
-              handle={handleApprove}
-            />
+          <div className="flex gap-2">
+            {tokenId && (
+              <div className="flex-none">
+                <Nft metadata={metadata} />{" "}
+              </div>
+            )}
+            <div className="flex-1 flex items-center">
+              <ul role="list" className="list-none space-y-3 w-full">
+                <li>
+                  <Info
+                    isApprove={isApprove ? isDone : !isDone}
+                    tokenId={tokenId}
+                    value={value}
+                    symbol={symbol}
+                  />
+                </li>
+                <li>
+                  <Token
+                    addr={address}
+                    title={value !== undefined ? `Token` : `Collection`}
+                  />
+                </li>
+                <li>
+                  <Spender addr={addr} />
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
-      )}
+        <div className="w-full">
+          <Button
+            defaultText={isApprove ? `Approve` : `Dispprove`}
+            successText="Done"
+            defaultIcon={<IconEdit />}
+            successIcon={<IconCheckSquare />}
+            status={status}
+            handle={handleApprove}
+          />
+        </div>
+      </div>
     </div>
   );
 };

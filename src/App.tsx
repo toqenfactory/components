@@ -3,6 +3,7 @@ import Connect from "./react/components/Connect";
 import Create from "./react/components/Create";
 import Mint from "./react/components/Mint";
 import Approve from "./react/components/Approve";
+import MintNFT from "./react/components/Mint/MintNFT";
 
 function App() {
   const [component, setComponent] = useState(<></>);
@@ -113,7 +114,7 @@ function App() {
         className="btn"
         onClick={() => {
           setComponent(
-            <Mint
+            <MintNFT
               address={erc721}
               handle={({ data, status }) => {
                 console.log("data", data);
@@ -190,6 +191,27 @@ function App() {
         }}
       >
         Approve All ERC721
+      </button>
+      <button
+        className="btn"
+        onClick={() => {
+          setComponent(
+            <Approve
+              address={erc721}
+              operator={spender}
+              approved={false}
+              handle={({ data, status }) => {
+                console.log("data", data);
+                console.log("status", status);
+              }}
+            />
+          );
+          setTitle("Approve All ERC721");
+          const modal: any = document.getElementById("modal");
+          modal?.showModal();
+        }}
+      >
+        Disapprove All ERC721
       </button>
       <dialog id="modal" className="modal w-full">
         <div className="modal-box w-11/12 max-w-5xl m-0 p-0">

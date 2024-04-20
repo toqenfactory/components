@@ -1,13 +1,13 @@
-import { IActionButton } from "./IApprove";
+import { IButton } from "./IApprove";
 
-export const ActionButton = ({
+export const Button = ({
   defaultText,
   successText,
   defaultIcon,
   successIcon,
   status,
   handle,
-}: IActionButton) => {
+}: IButton) => {
   return (
     <>
       <button
@@ -26,7 +26,7 @@ export const ActionButton = ({
         }`}
       >
         <span
-          className={`block text-xl font-medium lowercase ${
+          className={`block text-xl font-medium ${
             status !== "wallet" &&
             status !== "pending" &&
             status !== "success" &&
@@ -34,9 +34,9 @@ export const ActionButton = ({
           }`}
         >
           {status === "wallet"
-            ? `open wallet ...`
+            ? `Open Wallet ...`
             : status === "pending"
-            ? `please wait ...`
+            ? `Please Wait ...`
             : status === "success"
             ? successText
             : defaultText}

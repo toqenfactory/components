@@ -36,12 +36,12 @@ export interface IApprove {
   }) => void;
 }
 
-export interface IActionButton {
-  defaultText: string;
-  successText: string;
+export interface IButton {
+  defaultText: string | JSX.Element;
+  successText?: string | JSX.Element;
   defaultIcon: JSX.Element;
-  successIcon: JSX.Element;
-  status: IStatus;
+  successIcon?: JSX.Element;
+  status?: IStatus;
   handle: () => void;
 }
 
@@ -54,7 +54,7 @@ export interface INft {
 }
 
 export interface IInfo {
-  isApproved: boolean;
+  isApprove: boolean | undefined;
   tokenId?: string | undefined;
   value?: string | undefined;
   symbol?: string | undefined;

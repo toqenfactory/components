@@ -158,7 +158,7 @@ const Mint = ({
   >("idle");
 
   const [args, setArgs] = useState<any>();
-  const [ids, setIds] = useState<number | undefined>();
+  const [ids, setIds] = useState<number | undefined>(1);
   const [amount, setAmount] = useState("");
   const [eth, setEth] = useState("");
   const functionName = "mint";
@@ -188,7 +188,7 @@ const Mint = ({
 
     const fetchMetadata = async () => {
       const response = await fetch(
-        `https://dweb.link/ipfs/${baseURI.replace(/ipfs:\/\//g, "")}${(
+        `https://ipfs.io/ipfs/${baseURI.replace(/ipfs:\/\//g, "")}${(
           totalSupply + 1n
         ).toString()}`
       );
@@ -198,7 +198,7 @@ const Mint = ({
       const metadata = await response.json();
 
       metadata.image = /^ipfs/.test(metadata.image)
-        ? `https://dweb.link/ipfs/${metadata.image.replace(/ipfs:\/\//g, "")}`
+        ? `https://ipfs.io/ipfs/${metadata.image.replace(/ipfs:\/\//g, "")}`
         : metadata.image;
 
       setMetadata(metadata);
@@ -342,6 +342,8 @@ const Mint = ({
     [eth, tokenPrice]
   );
 
+  console.log("metadata", metadata);
+
   return (
     <div className="min-w-96">
       {isNFT ? (
@@ -417,9 +419,9 @@ const Mint = ({
                             >
                               <path
                                 stroke="currentColor"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
                                 d="M1 1h16"
                               />
                             </svg>
@@ -462,9 +464,9 @@ const Mint = ({
                             >
                               <path
                                 stroke="currentColor"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
                                 d="M9 1v16M1 9h16"
                               />
                             </svg>

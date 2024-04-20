@@ -23,12 +23,12 @@ export const Nft = ({ metadata }: INft) => {
   );
 };
 
-export const Info = ({ isApproved, tokenId, value, symbol }: IInfo) => {
+export const Info = ({ isApprove, tokenId, value, symbol }: IInfo) => {
   return (
     <div className="flex justify-between items-center">
-      {!tokenId && !value && !symbol && (
+      {!tokenId && !value && (
         <div className="flex">
-          <span className="w-6 h-6 mx-1">
+          <span className="w-6 h-6 mr-1">
             <IconImage />
           </span>
           <span className="text-slate-950 dark:text-slate-50 font-extrabold mx-1">
@@ -39,7 +39,7 @@ export const Info = ({ isApproved, tokenId, value, symbol }: IInfo) => {
       )}
       {tokenId && !value && (
         <div className="flex">
-          <span className="w-6 h-6 mx-1">
+          <span className="w-6 h-6 mr-1">
             <IconImage />
           </span>
           <span className="text-slate-950 dark:text-slate-50 font-extrabold mx-1">
@@ -50,7 +50,7 @@ export const Info = ({ isApproved, tokenId, value, symbol }: IInfo) => {
       )}
       {!tokenId && value && symbol && (
         <div className="flex">
-          <span className="w-6 h-6 mx-1">
+          <span className="w-6 h-6 mr-1">
             <IconDollarSign />
           </span>
           <span className="text-slate-950 dark:text-slate-50 font-extrabold mx-1">
@@ -61,16 +61,18 @@ export const Info = ({ isApproved, tokenId, value, symbol }: IInfo) => {
           </span>
         </div>
       )}
-      {isApproved && (
-        <div className="flex justify-center items-center bg-slate-50 text-slate-800 dark:bg-slate-800 dark:text-slate-50 rounded-md px-2 py-1 mx-1">
-          <IconShieldOff className="w-4 mr-2" /> Approved
-        </div>
-      )}
-      {!isApproved && (
-        <div className="flex justify-center items-center bg-slate-50 text-slate-800 dark:bg-slate-800 dark:text-slate-50 rounded-md px-2 py-1 mx-1">
-          <IconShield className="w-4 mr-2" /> Not Approved
-        </div>
-      )}
+      <div className="flex justify-center items-center bg-slate-50 text-slate-800 dark:bg-slate-800 dark:text-slate-50 rounded-md px-2 py-1 ml-1">
+        {isApprove !== undefined && isApprove && (
+          <>
+            <IconShieldOff className="w-4 mr-2" /> Approved
+          </>
+        )}
+        {isApprove !== undefined && !isApprove && (
+          <>
+            <IconShield className="w-4 mr-2" /> Not Approved
+          </>
+        )}
+      </div>
     </div>
   );
 };
@@ -84,7 +86,7 @@ export const Token = ({ addr, title }: IToken) => {
   return (
     <div className="flex justify-between items-center">
       <div className="flex justify-between items-center">
-        <span className="w-6 h-6 mx-1">
+        <span className="w-6 h-6 mr-1">
           <IconLayers />
         </span>
         <span className="text-xs">{title}</span>
@@ -119,7 +121,7 @@ export const Spender = ({ addr }: ISpender) => {
   return (
     <div className="flex justify-between items-center">
       <div className="flex justify-between items-center">
-        <span className="w-6 h-6 mx-1">
+        <span className="w-6 h-6 mr-1">
           <IconUser />
         </span>
         <span className="text-xs">Spender</span>
