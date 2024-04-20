@@ -1,3 +1,5 @@
+import { IActionButton } from "./IApprove";
+
 export const ActionButton = ({
   defaultText,
   successText,
@@ -5,14 +7,7 @@ export const ActionButton = ({
   successIcon,
   status,
   handle,
-}: {
-  defaultText: string;
-  successText: string;
-  defaultIcon: JSX.Element;
-  successIcon: JSX.Element;
-  status: "idle" | "wallet" | "pending" | "success" | "error" | undefined;
-  handle: () => void;
-}) => {
+}: IActionButton) => {
   return (
     <>
       <button
@@ -27,7 +22,7 @@ export const ActionButton = ({
             : `${
                 (status === "wallet" || status === "pending") &&
                 `pointer-events-none`
-              } text-white/90 hover:text-white/100 from-sky-300 to-sky-400 hover:from-sky-400 hover:to-sky-400 dark:text-white/60 dark:hover:text-white/80 dark:from-sky-600 dark:to-sky-700 dark:hover:from-sky-700 dark:hover:to-sky-700`
+              } text-white/90 hover:text-white/100 from-sky-300 to-sky-400 hover:from-sky-400 hover:to-sky-400 dark:from-sky-600 dark:to-sky-700 dark:hover:from-sky-700 dark:hover:to-sky-700`
         }`}
       >
         <span

@@ -6,41 +6,15 @@ import {
   useReadContracts,
 } from "wagmi";
 import { parseUnits } from "viem";
-import IconCheck from "./icons/IconCheck";
+import IconCheckSquare from "./icons/IconCheckSquare";
 import IconEdit from "./icons/IconEdit";
 import { Steps } from "./Steps";
 import { ActionButton } from "./ActionButton";
 
-type Status = "idle" | "wallet" | "pending" | "success" | "error" | undefined;
-type FunctionName = "approve" | "setApprovalForAll" | undefined;
-type Args = [`0x${string}`, bigint | boolean] | undefined;
-type Metadata =
-  | {
-      name: string;
-      description: string;
-      image: string;
-      external_url: string;
-    }
-  | undefined;
-interface ApproveType {
-  address: `0x${string}` | undefined;
-  to?: `0x${string}` | undefined;
-  tokenId?: string | undefined;
-  operator?: `0x${string}` | undefined;
-  approved?: boolean | undefined;
-  spender?: `0x${string}` | undefined;
-  value?: string | undefined;
-  handle: ({
-    data,
-    status,
-  }: {
-    data: string | undefined;
-    status: Status;
-  }) => void;
-}
-
 import { abi } from "./utils";
 import { Info, Nft, Spender, Token } from "./Rows";
+import { Skeleton } from "./Skeleton";
+import { IApprove, IArgs, IFunctionName, IMetadata, IStatus } from "./IApprove";
 
 const Approve = ({
   address,
@@ -51,17 +25,17 @@ const Approve = ({
   spender,
   value,
   handle,
-}: ApproveType) => {
+}: IApprove) => {
   const { address: accountAddress } = useAccount();
   const addr = useMemo(
     () => to || operator || spender,
     [to, operator, spender]
   );
 
-  const [status, setStatus] = useState<Status>();
-  const [functionName, setFunctionName] = useState<FunctionName>();
-  const [args, setArgs] = useState<Args>();
-  const [metadata, setMetadata] = useState<Metadata>();
+  const [status, setStatus] = useState<IStatus>();
+  const [functionName, setFunctionName] = useState<IFunctionName>();
+  const [args, setArgs] = useState<IArgs>();
+  const [metadata, setMetadata] = useState<IMetadata>();
   const [tokenNotFound, setTokenNotFound] = useState<boolean>(false);
 
   const {
@@ -133,29 +107,6 @@ const Approve = ({
     [getApproved, isApprovedForAll, allowance]
   );
 
-  console.log(
-    "address",
-    address,
-    "to",
-    to,
-    "tokenId",
-    tokenId,
-    "operator",
-    operator,
-    "approved",
-    approved,
-    "spender",
-    spender,
-    "value",
-    value,
-    "getApproved",
-    getApproved,
-    "isApprovedForAll",
-    isApprovedForAll,
-    "allowance",
-    allowance
-  );
-
   const isApproved = useMemo(() => {
     let isApproved = false;
     if (getApproved !== undefined && addr !== undefined) {
@@ -165,13 +116,7 @@ const Approve = ({
     } else if (isApprovedForAll !== undefined) {
       isApproved = isApprovedForAll;
     }
-    if (isApproved) {
-      if (status !== "success") setStatus("success");
-      return isApproved;
-    } else {
-      setStatus(undefined);
-      return false;
-    }
+    return isApproved;
   }, [getApproved, isApprovedForAll, allowance, addr, value]);
 
   useEffect(() => {
@@ -199,7 +144,11 @@ const Approve = ({
     if (onChain === "pending") {
       if (offChain === "idle") {
         handle({ data: undefined, status: "idle" });
-        setStatus("idle");
+        if (isApproved && status !== "success") {
+          setStatus("success");
+        } else {
+          setStatus("idle");
+        }
       } else if (offChain === "pending") {
         handle({ data: undefined, status: "wallet" });
         setStatus("wallet");
@@ -213,7 +162,7 @@ const Approve = ({
       setStatus("success");
       refetch();
     }
-  }, [offChain, onChain]);
+  }, [offChain, onChain, isApproved]);
 
   useEffect(() => {
     if (tokenURI === undefined) return;
@@ -247,42 +196,17 @@ const Approve = ({
   return (
     <div className="min-w-96 flex flex-col gap-2">
       {!address ? (
-        <div className="flex justify-center items-center">
+        <div className="flex justify-center items-center text-slate-700 text-xl font-extrabold">
           Token Address Not Found
         </div>
       ) : (
         isLoading &&
         (tokenNotFound ? (
-          <div className="flex justify-center items-center">
+          <div className="flex justify-center items-center text-slate-700 text-xl font-extrabold">
             Token #{tokenId} Not Found
           </div>
         ) : (
-          <div className="flex flex-col gap-4">
-            <div className="animate-pulse flex flex-col justify-center gap-2">
-              <div className="flex gap-2">
-                <div className="rounded-xl bg-slate-200 h-20 w-20"></div>
-                <div className="flex-1 space-y-6 py-1">
-                  <div className="space-y-3">
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="h-4 bg-slate-200 rounded col-span-2"></div>
-                      <div className="h-4 bg-slate-200 rounded col-span-1"></div>
-                    </div>
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="h-4 bg-slate-200 rounded col-span-1"></div>
-                      <div className="h-4 bg-slate-200 rounded col-span-2"></div>
-                    </div>
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="h-4 bg-slate-200 rounded col-span-2"></div>
-                      <div className="h-4 bg-slate-200 rounded col-span-1"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="">
-                <div className="h-12 bg-slate-200 rounded-xl"></div>
-              </div>
-            </div>
-          </div>
+          <Skeleton isOneNft={tokenId !== undefined} />
         ))
       )}
       {!isLoading && (
@@ -328,10 +252,10 @@ const Approve = ({
           </div>
           <div className="w-full">
             <ActionButton
-              defaultText="approve"
-              successText="approved"
+              defaultText="Approve"
+              successText="Done"
               defaultIcon={<IconEdit />}
-              successIcon={<IconCheck />}
+              successIcon={<IconCheckSquare />}
               status={status}
               handle={handleApprove}
             />

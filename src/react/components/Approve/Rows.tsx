@@ -1,4 +1,7 @@
 import { useEnsName } from "wagmi";
+
+import { IInfo, INft, ISpender, IToken } from "./IApprove";
+
 import IconDollarSign from "./icons/IconDollarSign";
 import IconImage from "./icons/IconImage";
 import IconShield from "./icons/IconShield";
@@ -6,7 +9,7 @@ import IconShieldOff from "./icons/IconShieldOff";
 import IconLayers from "./icons/IconLayers";
 import IconUser from "./icons/IconUser";
 
-export const Nft = ({ metadata }: { metadata: any }) => {
+export const Nft = ({ metadata }: INft) => {
   return (
     metadata?.image && (
       <div className="flex justify-center items-center rounded-xl overflow-hidden w-full h-full">
@@ -20,17 +23,7 @@ export const Nft = ({ metadata }: { metadata: any }) => {
   );
 };
 
-export const Info = ({
-  isApproved,
-  tokenId,
-  value,
-  symbol,
-}: {
-  isApproved: boolean;
-  tokenId?: string | undefined;
-  value?: string | undefined;
-  symbol?: string | undefined;
-}) => {
+export const Info = ({ isApproved, tokenId, value, symbol }: IInfo) => {
   return (
     <div className="flex justify-between items-center">
       {!tokenId && !value && !symbol && (
@@ -82,13 +75,7 @@ export const Info = ({
   );
 };
 
-export const Token = ({
-  addr,
-  title,
-}: {
-  addr: `0x${string}` | undefined;
-  title: string;
-}) => {
+export const Token = ({ addr, title }: IToken) => {
   const { data: ens } = useEnsName({
     address: addr,
     query: { enabled: !!addr },
@@ -123,7 +110,7 @@ export const Token = ({
   );
 };
 
-export const Spender = ({ addr }: { addr: `0x${string}` | undefined }) => {
+export const Spender = ({ addr }: ISpender) => {
   const { data: ens } = useEnsName({
     address: addr,
     query: { enabled: !!addr },
