@@ -6,6 +6,7 @@ import {
   useReadContract,
   useReadContracts,
   useBalance,
+  useWatchContractEvent,
 } from "wagmi";
 
 import { formatUnits, parseUnits } from "viem";
@@ -20,6 +21,10 @@ import IconImagePlus from "./icons/IconImagePlus";
 import IconUserReceivedLine from "./icons/IconUserReceivedLine";
 import IconPicture from "./icons/IconPicture";
 import EthAddress from "./EthAddress";
+import IconAddress from "./icons/IconAddress";
+import IconIdentifier from "./icons/IconIdentifier";
+import IconTags from "./icons/IconTags";
+import IconCopy from "./icons/IconCopy";
 
 const abi = [
   {
@@ -73,6 +78,31 @@ const abi = [
     type: "function",
     name: "baseURI",
     outputs: [{ internalType: "string", name: "", type: "string" }],
+  },
+  {
+    type: "event",
+    name: "Transfer",
+    inputs: [
+      {
+        name: "from",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "to",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "tokenId",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
   },
 ];
 
@@ -165,8 +195,10 @@ const MintNFT = ({
     "idle" | "wallet" | "pending" | "success" | "error"
   >("idle");
 
+  const [ids, setIds] = useState<string[] | undefined>();
+
   const [args, setArgs] = useState<any>();
-  const [ids, setIds] = useState<number | undefined>(1);
+  const [nftCount, setNftCount] = useState<number | undefined>(1);
   const [amount, setAmount] = useState("");
   const [eth, setEth] = useState("");
   const functionName = "mint";
@@ -184,8 +216,8 @@ const MintNFT = ({
   });
 
   useEffect(() => {
-    setArgs([account, isNFT ? ids : parseUnits(amount, 18)]);
-  }, [account, isNFT, amount, ids]);
+    setArgs([account, isNFT ? nftCount : parseUnits(amount, 18)]);
+  }, [account, isNFT, amount, nftCount]);
 
   useEffect(() => {
     refetchBalanceOf();
@@ -241,8 +273,8 @@ const MintNFT = ({
   useEffect(() => {
     if (status === "success") {
       setAmount("");
-      setIds((ids) =>
-        BigInt(ids ?? 0) + (totalSupply ?? 0n) >= (maxSupply ?? 0) ? 0 : 1
+      setNftCount((nftCount) =>
+        BigInt(nftCount ?? 0) + (totalSupply ?? 0n) >= (maxSupply ?? 0) ? 0 : 1
       );
       setEth("");
       refetch();
@@ -252,22 +284,22 @@ const MintNFT = ({
   }, [status]);
 
   useEffect(() => {
-    setIds(1);
+    setNftCount(1);
   }, [tokenPrice]);
 
   useEffect(() => {
-    if (tokenPrice === undefined || ids === undefined) return;
+    if (tokenPrice === undefined || nftCount === undefined) return;
 
     const eth =
       tokenPrice > 0n
         ? formatUnits(
-            (parseUnits(ids.toString(), 18) * tokenPrice) / 10n ** 18n,
+            (parseUnits(nftCount.toString(), 18) * tokenPrice) / 10n ** 18n,
             18
           )
         : "0";
 
     if (isNFT) setEth(eth);
-  }, [tokenPrice, ids]);
+  }, [tokenPrice, nftCount]);
 
   const handleMint = useCallback(() => {
     if (!address || (!amount && !isNFT)) return;
@@ -276,135 +308,206 @@ const MintNFT = ({
     writeContract({ abi, address, functionName, args, value });
   }, [address, functionName, args, amount, eth, tokenPrice]);
 
+  const eventName = "Transfer";
+
+  useWatchContractEvent({
+    address,
+    abi,
+    eventName,
+    onLogs(logs) {
+      logs.forEach((log: any) => {
+        if (log.transactionHash === hash && log?.args?.tokenId) {
+          const id = log?.args?.tokenId?.toString() as string;
+          if (id) setIds((ids) => (ids ? [...ids, id] : [id]));
+        }
+      });
+    },
+  });
+
   return (
-    <div className="min-w-96">
+    <div className="w-96">
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-4">
           <div>
             <Steps status={status} />
           </div>
-          <div className="flex gap-2">
-            <div className="flex-none">{<Nft metadata={metadata} />}</div>
-            <div className="flex-1 flex items-center">
-              <ul role="list" className="list-none space-y-3 w-full">
-                <li>
-                  <div className="flex justify-center items-center">
-                    <div className="flex">{metadata?.name}</div>
-                  </div>
-                </li>
-                <li>
-                  <div className="flex justify-between items-center">
-                    <div className="flex justify-between items-center">
-                      <span className="w-6 h-6 mr-1">
-                        <IconUserReceivedLine />
-                      </span>
-                      <span className="text-xs">
-                        {accountAddress === account ? `You` : `Receiver`}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <div className="w-full relative">
-                        <EthAddress
-                          initialAddress={account}
-                          handler={(newAddress) => setAccount(newAddress)}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </li>
-                <li>
-                  <div className="flex justify-between items-center">
-                    <div className="flex justify-between items-center">
-                      <span className="w-6 h-6 mr-1">
-                        <IconImagePlus />
-                      </span>
-                      <span className="text-xs">Mint</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <div className="w-full relative">
-                        <form className="max-w-xs mx-auto">
-                          <div className="relative flex items-center">
-                            <button
-                              type="button"
-                              id="decrement-button"
-                              data-input-counter-decrement="counter-input"
-                              className="flex-shrink-0 bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 inline-flex items-center justify-center border border-gray-300 rounded-md h-5 w-5 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
-                              onClick={() =>
-                                setIds((ids) => (ids && ids > 1 ? --ids : ids))
-                              }
-                            >
-                              <svg
-                                className="w-2.5 h-2.5 text-gray-900 dark:text-white"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 18 2"
-                              >
-                                <path
-                                  stroke="currentColor"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M1 1h16"
-                                />
-                              </svg>
-                            </button>
-                            <input
-                              type="text"
-                              id="counter-input"
-                              data-input-counter
-                              className="flex-shrink-0 text-gray-900 dark:text-white border-0 bg-transparent text-sm font-normal focus:outline-none focus:ring-0 max-w-[3.5rem] text-center"
-                              placeholder=""
-                              value={`${ids} NFT`}
-                              required
-                            />
-                            <button
-                              type="button"
-                              id="increment-button"
-                              data-input-counter-increment="counter-input"
-                              className="flex-shrink-0 bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 inline-flex items-center justify-center border border-gray-300 rounded-md h-5 w-5 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
-                              onClick={() =>
-                                setIds((ids) =>
-                                  ids && BigInt(ids) < (maxSupply ?? 0n)
-                                    ? ++ids
-                                    : ids
-                                )
-                              }
-                            >
-                              <svg
-                                className="w-2.5 h-2.5 text-gray-900 dark:text-white"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 18 18"
-                              >
-                                <path
-                                  stroke="currentColor"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M9 1v16M1 9h16"
-                                />
-                              </svg>
-                            </button>
-                          </div>
-                        </form>
-                      </div>
+          {status === "success" ? (
+            <div className="flex flex-col gap-2">
+              <div className="flex justify-center items-center text-xl font-extrabold text-slate-400 dark:text-slate-500">
+                Add NFT to your wallet
+              </div>
+              <div className="flex justify-center items-center">
+                <div className="flex text-xs rounded-md bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-50 font-extrabold px-2 py-1 mx-1">
+                  {address}
+                  <IconCopy
+                    className="ml-1 w-4 h-4 hover:cursor-pointer hover:scale-110"
+                    onClick={() => {
+                      navigator.clipboard
+                        .writeText(address ?? "")
+                        .catch((err) =>
+                          console.error("Failed to copy text: ", err)
+                        );
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="flex justify-between items-center overflow-x-auto whitespace-nowrap">
+                <div className="inline-flex justify-between items-center">
+                  <span className="w-6 h-6 mr-1 text-slate-400 dark:text-slate-500">
+                    <IconTags />
+                  </span>
+                  <span className="text-xs">
+                    ID{ids && ids.length > 1 && `s`}:
+                  </span>
+                  <div className="">
+                    <div>
+                      {ids &&
+                        ids.map((id) => (
+                          <span
+                            key={id}
+                            className="rounded-md bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-50 font-extrabold px-2 py-1 mx-1"
+                          >
+                            {id}
+                          </span>
+                        ))}
                     </div>
                   </div>
-                </li>
-              </ul>
+                </div>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="flex gap-2">
+              <div className="flex-none">{<Nft metadata={metadata} />}</div>
+              <div className="flex-1 flex items-center">
+                <ul role="list" className="list-none space-y-3 w-full">
+                  <li>
+                    <div className="relative flex justify-center items-center h-6">
+                      <div className="absolute w-full px-2 text-center">
+                        <div className="text-nowrap overflow-hidden text-ellipsis font-extrabold">
+                          {metadata?.name}
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                    <div className="flex justify-between items-center">
+                      <div className="flex justify-between items-center">
+                        <span className="w-6 h-6 mr-1">
+                          <IconUserReceivedLine />
+                        </span>
+                        <span className="text-xs">
+                          {accountAddress === account ? `You` : `Receiver`}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <div className="w-full relative text-xs">
+                          <EthAddress
+                            initialAddress={account}
+                            handler={(newAddress) => setAccount(newAddress)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                    <div className="flex justify-between items-center">
+                      <div className="flex justify-between items-center">
+                        <span className="w-6 h-6 mr-1">
+                          <IconImagePlus />
+                        </span>
+                        <span className="text-xs">Mint</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <div className="w-full relative">
+                          <form className="max-w-xs mx-auto">
+                            <div className="relative flex items-center">
+                              <button
+                                type="button"
+                                id="decrement-button"
+                                data-input-counter-decrement="counter-input"
+                                className="flex-shrink-0 bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 inline-flex items-center justify-center border border-gray-300 rounded-md h-5 w-5 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
+                                onClick={() =>
+                                  setNftCount((nftCount) =>
+                                    nftCount && nftCount > 1
+                                      ? --nftCount
+                                      : nftCount
+                                  )
+                                }
+                              >
+                                <svg
+                                  className="w-2.5 h-2.5 text-gray-900 dark:text-white"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 18 2"
+                                >
+                                  <path
+                                    stroke="currentColor"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M1 1h16"
+                                  />
+                                </svg>
+                              </button>
+                              <input
+                                type="text"
+                                id="counter-input"
+                                data-input-counter
+                                className="flex-shrink-0 text-gray-900 dark:text-white border-0 bg-transparent text-sm font-normal focus:outline-none focus:ring-0 max-w-[3.5rem] text-center"
+                                placeholder=""
+                                value={`${nftCount} NFT`}
+                                required
+                              />
+                              <button
+                                type="button"
+                                id="increment-button"
+                                data-input-counter-increment="counter-input"
+                                className="flex-shrink-0 bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 inline-flex items-center justify-center border border-gray-300 rounded-md h-5 w-5 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
+                                onClick={() =>
+                                  setNftCount((nftCount) =>
+                                    nftCount &&
+                                    BigInt(nftCount) < (maxSupply ?? 0n)
+                                      ? ++nftCount
+                                      : nftCount
+                                  )
+                                }
+                              >
+                                <svg
+                                  className="w-2.5 h-2.5 text-gray-900 dark:text-white"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 18 18"
+                                >
+                                  <path
+                                    stroke="currentColor"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M9 1v16M1 9h16"
+                                  />
+                                </svg>
+                              </button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          )}
         </div>
         <div className="w-full">
           <Button
             defaultText={
               <div className="relative">
-                Mint
-                {parseFloat(eth) > 0 && (
+                <div className={eth && `transform -translate-y-2`}>Mint</div>
+                {eth && (
                   <div className="absolute inset-0 top-5 text-xs opacity-50">
-                    <span className="font-mono">{eth}</span> ETH
+                    <span className="font-mono">{eth}</span> {balance?.symbol}
                   </div>
                 )}
               </div>

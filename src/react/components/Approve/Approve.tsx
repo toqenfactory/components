@@ -15,7 +15,6 @@ import { abi } from "./utils";
 import { Info, Nft, Spender, Token } from "./Rows";
 import { Skeleton } from "./Skeleton";
 import { IApprove, IArgs, IFunctionName, IMetadata, IStatus } from "./IApprove";
-import Mint from "../Mint";
 import MintNFT from "../Mint/MintNFT";
 
 const Approve = ({
@@ -216,9 +215,7 @@ const Approve = ({
         {isMint && (
           <MintNFT
             address={address}
-            handle={({ data, status }) => {
-              console.log("data", data);
-              console.log("status", status);
+            handle={({ status }) => {
               if (status === "success") {
                 refetch();
                 setIsMint(false);
@@ -269,7 +266,7 @@ const Approve = ({
         </div>
         <div className="w-full">
           <Button
-            defaultText={isApprove ? `Approve` : `Dispprove`}
+            defaultText={isApprove ? `Approve` : `Disapprove`}
             successText="Done"
             defaultIcon={<IconEdit />}
             successIcon={<IconCheckSquare />}

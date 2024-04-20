@@ -61,7 +61,7 @@ export const Info = ({ isApprove, tokenId, value, symbol }: IInfo) => {
           </span>
         </div>
       )}
-      <div className="flex justify-center items-center bg-slate-50 text-slate-800 dark:bg-slate-800 dark:text-slate-50 rounded-md px-2 py-1 ml-1">
+      <div className="flex justify-center items-center bg-slate-50 text-slate-800 dark:bg-slate-800 dark:text-slate-50 rounded-md px-2 ml-1">
         {isApprove !== undefined && isApprove && (
           <>
             <IconShieldOff className="w-4 mr-2" /> Approved
@@ -93,12 +93,8 @@ export const Token = ({ addr, title }: IToken) => {
       </div>
       <div className="flex justify-between items-center">
         {addr && (
-          <span className="text-xs font-extrabold text-slate-400 mx-1">
-            <a
-              href={`https://etherscan.io/address/${addr}`}
-              target="_blank"
-              className="underline underline-offset-4 decoration-dotted font-mono"
-            >
+          <span className="text-xs underline underline-offset-4 decoration-dotted font-mono font-extrabold text-slate-400 mx-1">
+            <a href={`https://etherscan.io/address/${addr}`} target="_blank">
               {ens
                 ? ens
                 : addr && addr.length > 10

@@ -58,10 +58,10 @@ const EthAddressInput: FC<EthAddressInputProps> = ({
         />
       ) : (
         <div className="flex">
-          <span className="underline font-extrabold underline-offset-4 decoration-dashed">
+          <span className="underline underline-offset-4 font-mono text-slate-400 text-sm">
             {shortenAddress(address)}
           </span>
-          <IconBxEditAlt className="w-5 ml-2 hover:cursor-pointer hover:text-slate-500 text-slate-300" />
+          <IconBxEditAlt className="w-5 ml-2 hover:cursor-pointer hover:text-slate-500 text-slate-400" />
         </div>
       )}
     </div>
