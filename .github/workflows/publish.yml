@@ -25,6 +25,10 @@ jobs:
       - name: Copy README to components directory
         run: cp README.md ./src/react/
 
+      - name: Install packages
+        run: npm i
+        working-directory: ./src/react
+
       - name: Build package
         run: npm run build
         working-directory: ./src/react
