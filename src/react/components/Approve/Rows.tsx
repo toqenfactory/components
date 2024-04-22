@@ -1,13 +1,13 @@
 import { useEnsName } from "wagmi";
 
-import { IInfo, INft, ISpender, IToken } from "./IApprove";
+import { IInfo, INft, ISpender, IToken } from "../types";
 
-import IconDollarSign from "./icons/IconDollarSign";
-import IconImage from "./icons/IconImage";
-import IconShield from "./icons/IconShield";
-import IconShieldOff from "./icons/IconShieldOff";
-import IconLayers from "./icons/IconLayers";
-import IconUser from "./icons/IconUser";
+import IconDollarSign from "../Icons/IconDollarSign";
+import IconImage from "../Icons/IconImage";
+import IconShield from "../Icons/IconShield";
+import IconShieldOff from "../Icons/IconShieldOff";
+import IconLayers from "../Icons/IconLayers";
+import IconUser from "../Icons/IconUser";
 
 export const Nft = ({ metadata }: INft) => {
   return (
@@ -28,7 +28,7 @@ export const Info = ({ isApprove, tokenId, value, symbol }: IInfo) => {
     <div className="flex justify-between items-center">
       {!tokenId && !value && (
         <div className="flex">
-          <span className="w-6 h-6 mr-1">
+          <span className="w-6 h-6 mr-1 text-slate-400 dark:text-slate-500">
             <IconImage />
           </span>
           <span className="text-slate-950 dark:text-slate-50 font-extrabold mx-1">
@@ -39,7 +39,7 @@ export const Info = ({ isApprove, tokenId, value, symbol }: IInfo) => {
       )}
       {tokenId && !value && (
         <div className="flex">
-          <span className="w-6 h-6 mr-1">
+          <span className="w-6 h-6 mr-1 text-slate-400 dark:text-slate-500">
             <IconImage />
           </span>
           <span className="text-slate-950 dark:text-slate-50 font-extrabold mx-1">
@@ -50,7 +50,7 @@ export const Info = ({ isApprove, tokenId, value, symbol }: IInfo) => {
       )}
       {!tokenId && value && symbol && (
         <div className="flex">
-          <span className="w-6 h-6 mr-1">
+          <span className="w-6 h-6 mr-1 text-slate-400 dark:text-slate-500">
             <IconDollarSign />
           </span>
           <span className="text-slate-950 dark:text-slate-50 font-extrabold mx-1">
@@ -86,7 +86,7 @@ export const Token = ({ addr, title }: IToken) => {
   return (
     <div className="flex justify-between items-center">
       <div className="flex justify-between items-center">
-        <span className="w-6 h-6 mr-1">
+        <span className="w-6 h-6 mr-1 text-slate-400 dark:text-slate-500">
           <IconLayers />
         </span>
         <span className="text-xs">{title}</span>
@@ -117,7 +117,7 @@ export const Spender = ({ addr }: ISpender) => {
   return (
     <div className="flex justify-between items-center">
       <div className="flex justify-between items-center">
-        <span className="w-6 h-6 mr-1">
+        <span className="w-6 h-6 mr-1 text-slate-400 dark:text-slate-500">
           <IconUser />
         </span>
         <span className="text-xs">Spender</span>

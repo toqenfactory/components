@@ -1,6 +1,6 @@
-import IconCloudSnow from "./icons/IconCloudShow";
-import IconInfoOutline from "./icons/IconInfoOutline";
-import IconLayers from "./icons/IconLayers";
+import IconCloudSnow from "../Icons/IconCloudShow";
+import IconInfoOutline from "../Icons/IconInfoOutline";
+import IconLayers from "../Icons/IconLayers";
 
 const Steps = ({ step }: { step: number }) => {
   return (

@@ -6,16 +6,19 @@ import {
   useReadContracts,
 } from "wagmi";
 import { parseUnits } from "viem";
-import IconCheckSquare from "./icons/IconCheckSquare";
-import IconEdit from "./icons/IconEdit";
-import { Steps } from "./Steps";
-import { Button } from "./Button";
+
+import { IApprove, IArgs, IFunctionName, IMetadata, IStatus } from "../types";
 
 import { abi } from "./utils";
+
+import Steps from "../Steps";
+import ActionButton from "../ActionButton";
+import Skeleton from "../Skeletons";
+import MintERC721 from "../Mint/MintERC721";
 import { Info, Nft, Spender, Token } from "./Rows";
-import { Skeleton } from "./Skeleton";
-import { IApprove, IArgs, IFunctionName, IMetadata, IStatus } from "./IApprove";
-import MintNFT from "../Mint/MintNFT";
+
+import IconCheckSquare from "../Icons/IconCheckSquare";
+import IconEdit from "../Icons/IconEdit";
 
 const Approve = ({
   address,
@@ -25,6 +28,7 @@ const Approve = ({
   approved,
   spender,
   value,
+  steps = true,
   handle,
 }: IApprove) => {
   const { address: accountAddress } = useAccount();
@@ -48,6 +52,8 @@ const Approve = ({
     error,
   } = useWriteContract(); // offChain: idle -> pending -> success
   const { status: onChain } = useWaitForTransactionReceipt({ hash }); // onChain: pending -> success
+
+  console.log(error);
 
   const contracts: any = useMemo(() => {
     const contract = { address, abi } as const;
@@ -186,6 +192,8 @@ const Approve = ({
   const handleApprove = useCallback(() => {
     if (!address || !functionName || !args) return;
     writeContract({ abi, address, functionName, args });
+
+    console.log(functionName, args);
   }, [address, functionName, args]);
 
   if (!address)
@@ -202,10 +210,10 @@ const Approve = ({
           <div className="flex flex-col justify-center items-center gap-4 text-slate-700 dark:text-slate-500 text-xl font-extrabold">
             <div>Token #{tokenId} Not Found</div>
             <div className="w-full">
-              <Button
+              <ActionButton
                 defaultText="Mint NFT"
                 defaultIcon={<IconEdit />}
-                handle={() => {
+                onClick={() => {
                   setIsMint(true);
                 }}
               />
@@ -213,8 +221,9 @@ const Approve = ({
           </div>
         )}
         {isMint && (
-          <MintNFT
+          <MintERC721
             address={address}
+            steps={steps}
             handle={({ status }) => {
               if (status === "success") {
                 refetch();
@@ -232,9 +241,11 @@ const Approve = ({
     <div className="min-w-96 flex flex-col gap-2">
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-4">
-          <div>
-            <Steps status={status} />
-          </div>
+          {steps && (
+            <div>
+              <Steps status={status} />
+            </div>
+          )}
           <div className="flex gap-2">
             {tokenId && (
               <div className="flex-none">
@@ -265,13 +276,13 @@ const Approve = ({
           </div>
         </div>
         <div className="w-full">
-          <Button
+          <ActionButton
             defaultText={isApprove ? `Approve` : `Disapprove`}
             successText="Done"
             defaultIcon={<IconEdit />}
             successIcon={<IconCheckSquare />}
             status={status}
-            handle={handleApprove}
+            onClick={handleApprove}
           />
         </div>
       </div>

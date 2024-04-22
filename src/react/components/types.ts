@@ -1,3 +1,5 @@
+export type IAddress = `0x${string}` | undefined;
+
 export type IStatus =
   | "idle"
   | "wallet"
@@ -27,6 +29,7 @@ export interface IApprove {
   approved?: boolean | undefined;
   spender?: `0x${string}` | undefined;
   value?: string | undefined;
+  steps?: boolean;
   handle: ({
     data,
     status,
@@ -36,13 +39,13 @@ export interface IApprove {
   }) => void;
 }
 
-export interface IButton {
+export interface IActionButton {
   defaultText: string | JSX.Element;
   successText?: string | JSX.Element;
   defaultIcon: JSX.Element;
   successIcon?: JSX.Element;
   status?: IStatus;
-  handle: () => void;
+  onClick: () => void;
 }
 
 export interface ISteps {
@@ -67,4 +70,24 @@ export interface IToken {
 
 export interface ISpender {
   addr: `0x${string}` | undefined;
+}
+
+export interface IMint {
+  address: IAddress;
+  steps?: boolean;
+  handle: ({
+    data,
+    hash,
+    status,
+  }: {
+    data: string[] | undefined;
+    hash: `0x${string}` | undefined;
+    status: IStatus;
+  }) => void;
+}
+
+export interface EthAddressInputProps {
+  initialAddress: `0x${string}` | undefined;
+  defaultText?: string | undefined;
+  handler: (newAddress: `0x${string}` | undefined) => void;
 }

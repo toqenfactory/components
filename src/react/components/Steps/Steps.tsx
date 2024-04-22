@@ -1,9 +1,9 @@
-import { ISteps } from "./IApprove";
+import { ISteps } from "../types";
 
-import IconArrows from "./icons/IconArrows";
-import IconCheckCircle from "./icons/IconCheckCircle";
+import IconArrows from "../Icons/IconArrows";
+import IconCheckCircle from "../Icons/IconCheckCircle";
 
-export const Steps = ({ status }: ISteps) => {
+const Steps = ({ status }: ISteps) => {
   const step1 =
     status === "wallet" || status === "pending" || status === "success";
   const step2 = status === "pending" || status === "success";
@@ -36,8 +36,10 @@ export const Steps = ({ status }: ISteps) => {
         >
           {step2 ? (
             <IconCheckCircle className="text-sky-200 dark:text-sky-400" />
-          ) : (
+          ) : status !== "wallet" ? (
             `2`
+          ) : (
+            ``
           )}
         </span>
         Confirmation
@@ -55,8 +57,10 @@ export const Steps = ({ status }: ISteps) => {
         >
           {step3 ? (
             <IconCheckCircle className="text-sky-200 dark:text-sky-400" />
-          ) : (
+          ) : status !== "pending" ? (
             `3`
+          ) : (
+            ``
           )}
         </span>
         Success
@@ -64,3 +68,5 @@ export const Steps = ({ status }: ISteps) => {
     </ol>
   );
 };
+
+export default Steps;

@@ -8,10 +8,10 @@ import { parseUnits } from "viem";
 
 import { abi, generate } from "./utils";
 import Steps from "./Steps";
-import IconChevronRight from "./icons/IconChevronRight";
-import IconChevronLeft from "./icons/IconChevronLeft";
-import IconGrid from "./icons/IconGrid";
-import IconCopy from "./icons/IconCopy";
+import IconChevronRight from "../Icons/IconChevronRight";
+import IconChevronLeft from "../Icons/IconChevronLeft";
+import IconGrid from "../Icons/IconGrid";
+import IconCopy from "../Icons/IconCopy";
 
 const mtd =
   "ipfs://bafybeieyb62vnkv46zr5mw3nfqlhcxt7v2frd2tu6k3cwgkqfgwmnyflme/";
@@ -41,8 +41,6 @@ const Create = ({
 
   const eventName = "TokenCreated";
   const functionName = useMemo(() => `create${standart}`, [standart]);
-
-  console.log(error);
 
   const [step, setStep] = useState(1);
   const [status, setStatus] = useState("");
@@ -90,7 +88,6 @@ const Create = ({
 
     const tokenAddressByReceipt = data?.logs?.[0]?.topics?.[1];
     if (tokenAddressByReceipt) {
-      console.log("tokenAddressByReceipt", tokenAddressByReceipt);
       if (!tokenAddress)
         setTokenAddress(`0x${tokenAddressByReceipt.slice(26)}`);
     }
@@ -103,7 +100,6 @@ const Create = ({
     onLogs(logs) {
       logs.forEach((log: any) => {
         if (log.transactionHash === hash && log?.args?.tokenAddress) {
-          console.log("log.args.tokenAddress", log.args.tokenAddress);
           setTokenAddress(log.args.tokenAddress);
         }
       });

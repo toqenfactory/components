@@ -1,13 +1,12 @@
 import React, { useState, useRef, useEffect, FC } from "react";
-import IconBxEditAlt from "./icons/IconBxEditAlt";
 
-interface EthAddressInputProps {
-  initialAddress: `0x${string}` | undefined;
-  handler: (newAddress: `0x${string}` | undefined) => void;
-}
+import { EthAddressInputProps } from "../types";
+
+import IconIconEdit from "../Icons/IconIconEdit";
 
 const EthAddressInput: FC<EthAddressInputProps> = ({
   initialAddress,
+  defaultText,
   handler,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -45,7 +44,10 @@ const EthAddressInput: FC<EthAddressInputProps> = ({
   }, [address]);
 
   return (
-    <div onClick={() => !isEditing && setIsEditing(true)}>
+    <div
+      className="w-full flex justify-end items-center"
+      onClick={() => !isEditing && setIsEditing(true)}
+    >
       {isEditing ? (
         <input
           ref={inputRef}
@@ -53,15 +55,19 @@ const EthAddressInput: FC<EthAddressInputProps> = ({
           onChange={handleAddressChange}
           onBlur={finalizeEditing}
           autoFocus
-          className="w-full text-xs rounded-sm pl-1 bg-transparent focus:outline focus:outline-slate-300 dark:focus:outline-slate-700"
+          className="w-full text-xs rounded-sm px-1 font-mono bg-transparent focus:outline focus:outline-slate-300 dark:focus:outline-slate-700"
           spellCheck={false}
         />
       ) : (
-        <div className="flex">
-          <span className="underline underline-offset-4 font-mono text-slate-400 text-sm">
-            {shortenAddress(address)}
+        <div className="flex justify-end items-center">
+          <span className="text-slate-400 text-xs">
+            {defaultText ?? (
+              <span className="block font-mono translate-y-[1px]">
+                {shortenAddress(address)}
+              </span>
+            )}
           </span>
-          <IconBxEditAlt className="w-5 ml-2 hover:cursor-pointer hover:text-slate-500 text-slate-400" />
+          <IconIconEdit className="w-4 ml-2 hover:cursor-pointer hover:text-slate-500 text-slate-400" />
         </div>
       )}
     </div>

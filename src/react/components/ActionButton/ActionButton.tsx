@@ -1,17 +1,17 @@
-import { IButton } from "./IApprove";
+import { IActionButton } from "../types";
 
-export const Button = ({
+const ActionButton = ({
   defaultText,
   successText,
   defaultIcon,
   successIcon,
   status,
-  handle,
-}: IButton) => {
+  onClick,
+}: IActionButton) => {
   return (
     <>
       <button
-        onClick={handle}
+        onClick={onClick}
         type="button"
         disabled={
           status === "wallet" || status === "pending" || status === "success"
@@ -38,21 +38,23 @@ export const Button = ({
             : status === "pending"
             ? `Please Wait ...`
             : status === "success"
-            ? successText
+            ? successText ?? defaultText
             : defaultText}
         </span>
         <span
           className={`absolute w-12 h-12 inset-y-0 -top-0 right-1 ${
             status === "wallet" || status === "pending"
-              ? ` animate-pulse`
+              ? `animate-pulse`
               : status === "success"
               ? `text-white opacity-50`
               : `opacity-30 group-hover:transition-all group-hover:opacity-50`
           }`}
         >
-          {status === "success" ? successIcon : defaultIcon}
+          {status === "success" ? successIcon ?? defaultIcon : defaultIcon}
         </span>
       </button>
     </>
   );
 };
+
+export default ActionButton;

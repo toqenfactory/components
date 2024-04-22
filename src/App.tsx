@@ -3,7 +3,8 @@ import Connect from "./react/components/Connect";
 import Create from "./react/components/Create";
 import Mint from "./react/components/Mint";
 import Approve from "./react/components/Approve";
-import MintNFT from "./react/components/Mint/MintNFT";
+import MintERC721 from "./react/components/Mint/MintERC721";
+import MintERC20 from "./react/components/Mint/MintERC20";
 
 function App() {
   const [component, setComponent] = useState(<></>);
@@ -95,7 +96,7 @@ function App() {
         className="btn"
         onClick={() => {
           setComponent(
-            <Mint
+            <MintERC20
               address={erc20}
               handle={({ data, status }) => {
                 console.log("data", data);
@@ -114,7 +115,7 @@ function App() {
         className="btn"
         onClick={() => {
           setComponent(
-            <MintNFT
+            <MintERC721
               address={erc721}
               handle={({ data, status }) => {
                 console.log("data", data);
@@ -128,6 +129,26 @@ function App() {
         }}
       >
         Mint ERC721
+      </button>
+      <button
+        className="btn"
+        onClick={() => {
+          setComponent(
+            <MintERC721
+              address={erc721}
+              steps={false}
+              handle={({ data, status }) => {
+                console.log("data", data);
+                console.log("status", status);
+              }}
+            />
+          );
+          setTitle("Mint ERC721");
+          const modal: any = document.getElementById("modal");
+          modal?.showModal();
+        }}
+      >
+        Mint ERC721 WITHOUT STEPS
       </button>
       <button
         className="btn"
@@ -170,6 +191,28 @@ function App() {
         }}
       >
         Approve ERC721
+      </button>
+      <button
+        className="btn"
+        onClick={() => {
+          setComponent(
+            <Approve
+              address={erc721}
+              to={spender}
+              tokenId={"3"}
+              steps={false}
+              handle={({ data, status }) => {
+                console.log("data", data);
+                console.log("status", status);
+              }}
+            />
+          );
+          setTitle("Approve ERC721");
+          const modal: any = document.getElementById("modal");
+          modal?.showModal();
+        }}
+      >
+        Approve ERC721 WITHOUT STEPS
       </button>
       <button
         className="btn"

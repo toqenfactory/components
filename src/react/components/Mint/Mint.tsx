@@ -9,9 +9,9 @@ import {
 } from "wagmi";
 
 import { formatUnits, parseUnits } from "viem";
-import IconArrowDown from "./icons/IconArrowDown";
-import IconRepeat from "./icons/IconRepeat";
-import IconImage from "./icons/IconImage";
+import IconArrowDown from "../Icons/IconArrowDown";
+import IconRepeat from "../Icons/IconRepeat";
+import IconImage from "../Icons/IconImage";
 
 const abi = [
   {
