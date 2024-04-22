@@ -1,17 +1,30 @@
 {
   "name": "@toqen/react",
   "private": false,
-  "version": "0.0.8",
+  "version": "0.0.9",
+  "description": "Create/Mint/Approve ERC20/ERC721 Tokens",
+  "keywords": ["react", "ui", "components", "library", "ERC20", "ERC721", "token", "NFT", "mint", "approve"],
+  "author": "Peace Duck",
+  "homepage": "https://github.com/toqenfactory",
+  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc && ./node_modules/.bin/postcss src/styles/tailwind.css -o dist/styles.css"
   },
   "peerDependencies": {
-    "@tanstack/react-query": "^5.29.2",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "viem": "2.x",
-    "wagmi": "^2.5.19"
-  }
+    "@tanstack/react-query": "^5.x",
+    "react": "^18.x",
+    "react-dom": "^18.x",
+    "viem": "^2.x",
+    "wagmi": "^2.x"
+  },
+  "devDependencies": {
+    "typescript": "^5.x",
+    "tailwindcss": "^3.x",
+    "postcss": "^8.x",
+    "autoprefixer": "^10.x",
+    "prettier-plugin-tailwindcss": "^0.5.x"
+  },
+  "license": "MIT"
 }

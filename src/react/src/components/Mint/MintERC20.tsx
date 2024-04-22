@@ -8,7 +8,7 @@ import {
   useBalance,
 } from "wagmi";
 
-import { IMint, IStatus } from "../types";
+import { IAddress, IMint, IStatus } from "../types";
 
 import { abi } from "./utils";
 
@@ -16,12 +16,45 @@ import IconArrowDown from "../Icons/IconArrowDown";
 import IconRepeat from "../Icons/IconRepeat";
 import ActionButton from "../ActionButton";
 import EthAddressInput from "./EthAddress";
+import IconInfo from "../Icons/IconInfoOutline";
+
+const calculateTokenAmountFromEth = (
+  eth: string,
+  tokenPrice: bigint
+): string => {
+  if (!eth || tokenPrice <= 0n) return "0";
+  const ethAmountInWei = parseUnits(eth, 18);
+  const tokenAmount = (ethAmountInWei * 10n ** 18n) / tokenPrice;
+  return formatUnits(tokenAmount, 18);
+};
+
+const calculateEthAmountFromToken = (
+  amount: string,
+  tokenPrice: bigint
+): string => {
+  if (!amount || tokenPrice <= 0n) return "0";
+  const tokenAmount = parseUnits(amount, 18);
+  const ethAmountInWei = (tokenAmount * tokenPrice) / 10n ** 18n;
+  return formatUnits(ethAmountInWei, 18);
+};
+
+const useContracts = (address: IAddress, receiver: IAddress) => {
+  return useMemo(
+    () => [
+      { address, abi, functionName: "maxSupply" },
+      { address, abi, functionName: "tokenPrice" },
+      { address, abi, functionName: "totalSupply" },
+      { address, abi, functionName: "symbol" },
+      { address, abi, functionName: "balanceOf", args: [receiver] },
+    ],
+    [address]
+  ) as any;
+};
 
 const MintERC20 = ({ address, handle }: IMint) => {
   const { address: accountAddress } = useAccount();
   const { data: balance } = useBalance({ address: accountAddress });
 
-  const contract = { address, abi } as const;
   const functionName = "mint";
 
   const [receiver, setReceiver] = useState(accountAddress);
@@ -30,43 +63,11 @@ const MintERC20 = ({ address, handle }: IMint) => {
   const [amount, setAmount] = useState<string | undefined>();
   const [ethAmount, setEthAmount] = useState<string | undefined>();
 
-  const {
-    writeContract,
-    status: offChain,
-    data: hash,
-    error,
-  } = useWriteContract(); // offChain: idle -> pending -> success
-  const { status: onChain } = useWaitForTransactionReceipt({ hash }); // onChain: pending -> success
+  const contracts = useContracts(address, receiver);
+  const query = { enabled: !!address && !!receiver };
 
-  console.log(error);
-
-  const contracts: any = useMemo(() => {
-    return [
-      {
-        ...contract,
-        functionName: "maxSupply",
-      },
-      {
-        ...contract,
-        functionName: "tokenPrice",
-      },
-      {
-        ...contract,
-        functionName: "totalSupply",
-      },
-      {
-        ...contract,
-        functionName: "symbol",
-      },
-      {
-        ...contract,
-        functionName: "balanceOf",
-        args: [receiver],
-      },
-    ];
-  }, [address, receiver]);
-  const query = { enabled: !!contracts };
-
+  const { writeContract, status: offChain, data: hash } = useWriteContract();
+  const { status: onChain } = useWaitForTransactionReceipt({ hash });
   const { data, refetch } = useReadContracts({ contracts, query });
 
   const maxSupply = useMemo(() => {
@@ -84,6 +85,11 @@ const MintERC20 = ({ address, handle }: IMint) => {
   const balanceOf = useMemo(() => {
     return data?.[4]?.result as bigint | undefined;
   }, [data]);
+
+  const soldOut = useMemo(
+    () => (totalSupply ?? 0n) >= (maxSupply ?? 0n),
+    [totalSupply, maxSupply]
+  );
 
   useEffect(() => {
     const data = undefined;
@@ -135,31 +141,30 @@ const MintERC20 = ({ address, handle }: IMint) => {
       if (
         tokenPrice === undefined ||
         totalSupply === undefined ||
-        maxSupply === undefined
+        maxSupply === undefined ||
+        totalSupply >= maxSupply
       )
         return;
 
-      let input = e.currentTarget.value;
+      let input = e.currentTarget.value.replace(/[^0-9\.]/g, "");
       if (!input) {
-        setAmount("");
-        setEthAmount("");
+        setAmount(undefined);
+        setEthAmount(undefined);
       }
 
-      const [whole, fraction = ""] = input.replace(/[^0-9\.]/g, "").split(".");
+      const availableSupply = maxSupply - totalSupply;
+      const [whole, fraction = ""] = input.split(".");
       let amount = whole + "." + fraction.padEnd(18, "0").slice(0, 18);
 
-      if (parseUnits(amount, 18) + totalSupply > maxSupply) {
-        amount = formatUnits(maxSupply - totalSupply, 18);
+      if (parseUnits(amount, 18) > availableSupply) {
+        amount = formatUnits(availableSupply, 18);
         input = amount;
       }
 
-      const eth =
-        tokenPrice > 0n
-          ? formatUnits((parseUnits(amount, 18) * tokenPrice) / 10n ** 18n, 18)
-          : "0";
+      const eth = calculateEthAmountFromToken(amount, tokenPrice);
 
       setEthAmount(eth);
-      setAmount(input.replace(/[^0-9\.]/g, ""));
+      setAmount(input);
     },
     [amount, tokenPrice, totalSupply, maxSupply]
   );
@@ -170,36 +175,29 @@ const MintERC20 = ({ address, handle }: IMint) => {
         tokenPrice === undefined ||
         totalSupply === undefined ||
         maxSupply === undefined ||
+        totalSupply >= maxSupply ||
         tokenPrice <= 0n
       )
         return;
 
-      let input = e.currentTarget.value;
+      let input = e.currentTarget.value.replace(/[^0-9\.]/g, "");
       if (!input) {
-        setAmount("");
-        setEthAmount("");
+        setAmount(undefined);
+        setEthAmount(undefined);
       }
 
-      const [whole, fraction = ""] = input.replace(/[^0-9\.]/g, "").split(".");
+      const availableSupply = maxSupply - totalSupply;
+      const [whole, fraction = ""] = input.split(".");
       const eth = whole + "." + fraction.padEnd(18, "0").slice(0, 18);
-      let amount = formatUnits(
-        (parseUnits(eth, 18) * 10n ** 18n) / tokenPrice,
-        18
-      );
+      let amount = calculateTokenAmountFromEth(eth, tokenPrice);
 
-      if (parseUnits(amount, 18) + totalSupply > maxSupply) {
-        amount = formatUnits(maxSupply - totalSupply, 18);
-        input =
-          tokenPrice > 0n
-            ? formatUnits(
-                (parseUnits(amount, 18) * tokenPrice) / 10n ** 18n,
-                18
-              )
-            : "0";
+      if (parseUnits(amount, 18) > availableSupply) {
+        amount = formatUnits(availableSupply, 18);
+        input = formatUnits((availableSupply * tokenPrice) / 10n ** 18n, 18);
       }
 
       setAmount(amount);
-      setEthAmount(input.replace(/[^0-9\.]/g, ""));
+      setEthAmount(input);
     },
     [ethAmount, tokenPrice, totalSupply, maxSupply]
   );
@@ -217,7 +215,9 @@ const MintERC20 = ({ address, handle }: IMint) => {
         <div className="relative flex flex-col items-center justify-between gap-2 rounded-xl p-1">
           <div className="w-full h-32 bg-slate-50 dark:bg-slate-800 rounded-xl px-4 py-2 border border-slate-50 dark:border-slate-800 hover:border-slate-300 hover:dark:border-slate-700">
             <label htmlFor="you-pay" className="text-xs text-slate-500">
-              You Pay
+              <div className="flex justify-between items-center w-full">
+                <div>You Pay</div>
+              </div>
             </label>
             <div className="relative">
               <input
@@ -230,10 +230,12 @@ const MintERC20 = ({ address, handle }: IMint) => {
                 required
               />
               <div className="text-slate-600 font-extrabold inset-y-0 absolute top-4 right-0 h-9 bg-slate-100 rounded-lg text-sm px-4 py-2 dark:text-slate-50 dark:bg-slate-900 shadow-xs">
-                ETH
+                {balance?.symbol}
               </div>
               <div className="text-right text-xs text-slate-500">
-                <span>Balance:</span>{" "}
+                <span className="mr-2 text-slate-300 dark:text-slate-600">
+                  Balance:
+                </span>
                 <span>
                   {parseFloat(formatUnits(balance?.value ?? 0n, 18)).toFixed(3)}
                 </span>
@@ -242,17 +244,34 @@ const MintERC20 = ({ address, handle }: IMint) => {
           </div>
 
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <IconArrowDown
-              className={`${
-                (status === "wallet" || status === "pending") &&
-                `animate-bounce`
-              } w-10 h-10 text-slate-500 bg-slate-100 dark:bg-slate-800 font-extrabold rounded-xl px-2 py-1 border-2 border-white dark:border-slate-700`}
-            />
+            {soldOut ? (
+              <span className="w-10 h-10 text-slate-500 bg-slate-100 dark:bg-slate-800 font-extrabold rounded-xl px-2 py-1 border-2 border-white dark:border-slate-700">
+                Sold Out
+              </span>
+            ) : (
+              <IconArrowDown
+                className={`${
+                  (status === "wallet" || status === "pending") &&
+                  `animate-bounce`
+                } w-10 h-10 text-slate-500 bg-slate-100 dark:bg-slate-800 font-extrabold rounded-xl px-2 py-1 border-2 border-white dark:border-slate-700`}
+              />
+            )}
           </div>
 
           <div className="w-full h-32 bg-slate-50 dark:bg-slate-800 rounded-xl px-4 py-2 border border-slate-50 dark:border-slate-800 hover:border-slate-300 hover:dark:border-slate-700">
             <label htmlFor="you-receive" className="text-xs text-slate-500">
-              You Receive
+              <div className="flex justify-between items-center w-full">
+                <div>You Receive</div>
+                <div className="text-right w-4 h-4 text-slate-300 dark:text-slate-600 hover:text-slate-400 hover:dark:text-slate-700">
+                  <a
+                    href={`https://etherscan.io/address/${address}`}
+                    target="_blank"
+                    title={`Token ${symbol} Info [ ${address} ]`}
+                  >
+                    <IconInfo />
+                  </a>
+                </div>
+              </div>
             </label>
             <div className="relative">
               <input
@@ -268,7 +287,7 @@ const MintERC20 = ({ address, handle }: IMint) => {
                 {symbol}
               </div>
               <div className="flex justify-between items-center w-full">
-                <div className="relative flex items-center text-xs">
+                <div className="relative flex items-center text-xs text-slate-500">
                   <span className="mr-2 text-slate-300 dark:text-slate-600">
                     Receiver:
                   </span>
@@ -283,7 +302,9 @@ const MintERC20 = ({ address, handle }: IMint) => {
                   />
                 </div>
                 <div className="text-right text-xs text-slate-500">
-                  <span>Balance:</span>{" "}
+                  <span className="mr-2 text-slate-300 dark:text-slate-600">
+                    Balance:
+                  </span>
                   <span>
                     {parseFloat(formatUnits(balanceOf ?? 0n, 18)).toFixed(3)}
                   </span>
@@ -292,15 +313,17 @@ const MintERC20 = ({ address, handle }: IMint) => {
             </div>
           </div>
         </div>
-        <div className="mt-2">
-          <ActionButton
-            defaultText={`Swap`}
-            successText={`Done`}
-            defaultIcon={<IconRepeat />}
-            status={status}
-            onClick={() => handleMint()}
-          />
-        </div>
+        {!soldOut && (
+          <div className="mt-2">
+            <ActionButton
+              defaultText={`Swap`}
+              successText={`Done`}
+              defaultIcon={<IconRepeat />}
+              status={status}
+              onClick={() => handleMint()}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,10 +1,5 @@
 import { useState } from "react";
-import Connect from "./react/components/Connect";
-import Create from "./react/components/Create";
-import Mint from "./react/components/Mint";
-import Approve from "./react/components/Approve";
-import MintERC721 from "./react/components/Mint/MintERC721";
-import MintERC20 from "./react/components/Mint/MintERC20";
+import { Connect, Create, Mint, Approve } from "./react/src/components";
 
 function App() {
   const [component, setComponent] = useState(<></>);

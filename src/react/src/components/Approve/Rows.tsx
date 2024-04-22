@@ -1,6 +1,6 @@
 import { useEnsName } from "wagmi";
 
-import { IInfo, INft, ISpender, IToken } from "../types";
+import { IInfo, ISpender, IToken } from "../types";
 
 import IconDollarSign from "../Icons/IconDollarSign";
 import IconImage from "../Icons/IconImage";
@@ -8,20 +8,6 @@ import IconShield from "../Icons/IconShield";
 import IconShieldOff from "../Icons/IconShieldOff";
 import IconLayers from "../Icons/IconLayers";
 import IconUser from "../Icons/IconUser";
-
-export const Nft = ({ metadata }: INft) => {
-  return (
-    metadata?.image && (
-      <div className="flex justify-center items-center rounded-xl overflow-hidden w-full h-full">
-        <img
-          src={metadata.image}
-          className="w-24 h-24 object-cover rounded-xl"
-          alt={metadata.name}
-        ></img>
-      </div>
-    )
-  );
-};
 
 export const Info = ({ isApprove, tokenId, value, symbol }: IInfo) => {
   return (

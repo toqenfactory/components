@@ -34,7 +34,7 @@ export interface IApprove {
     data,
     status,
   }: {
-    data: string | undefined;
+    data: boolean | undefined;
     status: IStatus;
   }) => void;
 }
@@ -50,10 +50,6 @@ export interface IActionButton {
 
 export interface ISteps {
   status: IStatus;
-}
-
-export interface INft {
-  metadata: IMetadata;
 }
 
 export interface IInfo {

@@ -1,7 +1,7 @@
 import { useReadContracts } from "wagmi";
 import { useMemo } from "react";
 
-import { IMint } from "../types";
+import { IAddress, IMint } from "../types";
 
 import Skeleton from "../Skeletons/Approve";
 
@@ -31,35 +31,38 @@ const abi = [
   },
 ];
 
+const useContracts = (address: IAddress) =>
+  useMemo(
+    () => [
+      { address, abi, functionName: "decimals" },
+      { address, abi, functionName: "supportsInterface", args: ["0x80ac58cd"] },
+    ],
+    [address]
+  ) as any;
+
 const Mint = ({ address, steps = true, handle }: IMint) => {
-  const contracts: any = useMemo(() => {
-    return [
-      {
-        ...{ address, abi },
-        functionName: "decimals",
-      },
-      {
-        ...{ address, abi },
-        functionName: "supportsInterface",
-        args: ["0x80ac58cd"],
-      },
-    ];
-  }, [address]);
-  const query = { enabled: !!contracts };
+  const contracts = useContracts(address);
+  const query = { enabled: !!address };
 
   const { data } = useReadContracts({ contracts, query });
 
-  const decimals = useMemo(() => {
-    return data?.[0]?.result as bigint | undefined;
+  const isERC20 = useMemo(() => {
+    return data?.[0]?.result !== undefined;
   }, [data]);
-  const supportsInterface = useMemo(() => {
-    return data?.[1]?.result as boolean | undefined;
+  const isERC721 = useMemo(() => {
+    return data?.[1]?.result !== undefined;
   }, [data]);
 
-  if (supportsInterface !== undefined && decimals === undefined) {
+  if (isERC721 && !isERC20) {
     return <MintERC721 address={address} steps={steps} handle={handle} />;
-  } else if (supportsInterface === undefined && decimals !== undefined) {
+  } else if (!isERC721 && isERC20) {
     return <MintERC20 address={address} steps={steps} handle={handle} />;
+  } else if (address === undefined) {
+    return (
+      <div className="flex justify-center items-center text-slate-700 dark:text-slate-500 text-xl font-extrabold">
+        Token Address Not Found
+      </div>
+    );
   } else {
     return <Skeleton />;
   }
