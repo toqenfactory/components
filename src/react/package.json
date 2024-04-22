@@ -23,6 +23,7 @@
     "typescript": "^5.x",
     "tailwindcss": "^3.x",
     "postcss": "^8.x",
+    "postcss-cli": "^11.x",
     "autoprefixer": "^10.x",
     "prettier-plugin-tailwindcss": "^0.5.x"
   },
