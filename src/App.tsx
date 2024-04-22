@@ -96,7 +96,7 @@ function App() {
         className="btn"
         onClick={() => {
           setComponent(
-            <MintERC20
+            <Mint
               address={erc20}
               handle={({ data, status }) => {
                 console.log("data", data);
@@ -115,7 +115,7 @@ function App() {
         className="btn"
         onClick={() => {
           setComponent(
-            <MintERC721
+            <Mint
               address={erc721}
               handle={({ data, status }) => {
                 console.log("data", data);
@@ -134,7 +134,7 @@ function App() {
         className="btn"
         onClick={() => {
           setComponent(
-            <MintERC721
+            <Mint
               address={erc721}
               steps={false}
               handle={({ data, status }) => {
