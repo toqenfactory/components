@@ -1,6 +1,6 @@
 # Toqen Components
 
-<img src="https://raw.githubusercontent.com/toqenfactory/components/main/src/image.png"
+<img src="https://raw.githubusercontent.com/toqenfactory/components/main/src/image.png" />
 
 ### Create ERC20 Token
 
@@ -29,25 +29,25 @@
 ### Approve ERC20 Token
 
 ```jsx
-<Approve address="undefined" spender="Address" value="10" steps={true} />
+<Approve address="ERC20 Address" spender="Address" value="10" steps={true} />
 ```
 
 ### Approve ERC721 Token
 
 ```jsx
-<Approve address="undefined" to="Address" tokenId="3" steps={true} />
+<Approve address="ERC721 Address" to="Address" tokenId="3" steps={true} />
 ```
 
 ### Approve ALL ERC721 Token
 
 ```jsx
-<Approve address="undefined" operator="Address" approved={true} steps={true} />
+<Approve address="ERC721 Address" operator="Address" approved={true} />
 ```
 
 ### Disapprove ALL ERC721 Token
 
 ```jsx
-<Approve address="undefined" operator="Address" approved={false} steps={true} />
+<Approve address="ERC721 Address" operator="Address" approved={false} />
 ```
 
 ## Param `handle`

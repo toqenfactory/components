@@ -202,7 +202,7 @@ function App() {
               <h2 className="text-2xl">Approve ERC20 Token</h2>
               <div>
                 <code className="text-xs bg-slate-600/35 rounded-xl px-4 py-2">
-                  {`<Approve address="${erc20}" spender="Address" value="10" steps={true} />`}
+                  {`<Approve address="${erc20 ?? `ERC20 Address`}" spender="Address" value="10" steps={true} />`}
                 </code>
               </div>
               <div className="flex gap-4">
@@ -235,7 +235,7 @@ function App() {
               <h2 className="text-2xl">Approve ERC721 Token</h2>
               <div>
                 <code className="text-xs bg-slate-600/35 rounded-xl px-4 py-2">
-                  {`<Approve address="${erc721}" to="Address" tokenId="3" steps={true} />`}
+                  {`<Approve address="${erc721 ?? `ERC721 Address`}" to="Address" tokenId="3" steps={true} />`}
                 </code>
               </div>
               <div className="flex gap-4">
@@ -290,7 +290,7 @@ function App() {
               <h2 className="text-2xl">Approve ALL ERC721 Token</h2>
               <div>
                 <code className="text-xs bg-slate-600/35 rounded-xl px-4 py-2">
-                  {`<Approve address="${erc20}" operator="Address" approved={true} steps={true} />`}
+                  {`<Approve address="${erc721 ?? `ERC721 Address`}" operator="Address" approved={true} steps={true} />`}
                 </code>
               </div>
               <div className="flex gap-4">
@@ -323,7 +323,7 @@ function App() {
               <h2 className="text-2xl">Disapprove ALL ERC721 Token</h2>
               <div>
                 <code className="text-xs bg-slate-600/35 rounded-xl px-4 py-2">
-                  {`<Approve address="${erc20}" operator="Address" approved={false} steps={true} />`}
+                  {`<Approve address="${erc721 ?? `ERC721 Address`}" operator="Address" approved={false} steps={true} />`}
                 </code>
               </div>
               <div className="flex gap-4">
