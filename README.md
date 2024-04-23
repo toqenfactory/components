@@ -1,38 +1,62 @@
 # Toqen Components
 
-### Create Token Component
+<img src="https://raw.githubusercontent.com/toqenfactory/components/main/src/image.png"
+
+### Create ERC20 Token
 
 ```jsx
-<Create
-  standart={`ERC20|ERC721`}
-  toqen={`Address`}
-  handle={({ data, status }) => {}}
-/>
+<Create standart="ERC20" toqen="TOQEN Contract Address" />
 ```
 
-### Mint Token Component
+### Create ERC721 Token
 
 ```jsx
-<Mint 
-    address={`Address ERC20|ERC721`} 
-    handle={({ data, status }) => {}} />
+<Create standart="ERC721" toqen="TOQEN Contract Address" />
 ```
 
-### Approve Token Component
+### Mint ERC20 Token
 
 ```jsx
-<Approve
-    address={`Address ERC20|ERC721`}
-    {/* Approve One ERC721 */}
-    to={`Address`}
-    tokenId={`ID ERC721`}
-    {/* Approve All ERC721 */}
-    operator={`Address`}
-    approved={`true|false`}
-    {/* Approve ERC20 */}
-    spender={`Address`}
-    value={`Amount ERC20`}
-    handle={({data,status})=>{}} />
+<Mint standart="ERC20" address="ERC20 Address" />
+```
+
+### Mint ERC721 Token
+
+```jsx
+<Mint standart="ERC721" address="ERC721 Address" steps={true} />
+```
+
+### Approve ERC20 Token
+
+```jsx
+<Approve address="undefined" spender="Address" value="10" steps={true} />
+```
+
+### Approve ERC721 Token
+
+```jsx
+<Approve address="undefined" to="Address" tokenId="3" steps={true} />
+```
+
+### Approve ALL ERC721 Token
+
+```jsx
+<Approve address="undefined" operator="Address" approved={true} steps={true} />
+```
+
+### Disapprove ALL ERC721 Token
+
+```jsx
+<Approve address="undefined" operator="Address" approved={false} steps={true} />
+```
+
+## Param `handle`
+
+```
+handle={({ data, status }) => {
+  console.log("data", data);
+  console.log("status", status);
+}}
 ```
 
 ### Contract Toqen

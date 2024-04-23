@@ -19,13 +19,12 @@ import {
 import { abi } from './utils';
 
 import ActionButton from '../ActionButton';
-import MintERC721 from '../Mint/MintERC721';
 import Skeleton from '../Skeletons';
 import Steps from '../Steps';
 import { Info, Spender, Token } from './Rows';
 
 import IconCheckSquare from '../Icons/IconCheckSquare';
-import IconEdit from '../Icons/IconEdit';
+import IconImagePlus from '../Icons/IconImagePlus';
 
 const IPFS_GATEWAY = 'https://ipfs.io/ipfs/';
 
@@ -197,33 +196,8 @@ const Approve = ({
 
   if (getApproved === undefined && tokenId !== undefined)
     return (
-      <div className="flex min-w-96 flex-col gap-2">
-        {!isMint && (
-          <div className="flex flex-col items-center justify-center gap-4 text-xl font-extrabold text-slate-700 dark:text-slate-500">
-            <div>Token #{tokenId} Not Found</div>
-            <div className="w-full">
-              <ActionButton
-                defaultText="Mint NFT"
-                defaultIcon={<IconEdit />}
-                onClick={() => {
-                  setIsMint(true);
-                }}
-              />
-            </div>
-          </div>
-        )}
-        {isMint && (
-          <MintERC721
-            address={address}
-            steps={steps}
-            handle={({ status }) => {
-              if (status === 'success') {
-                refetch();
-                setIsMint(false);
-              }
-            }}
-          />
-        )}
+      <div className="flex items-center justify-center text-xl font-extrabold text-slate-700 dark:text-slate-500">
+        <div>Token #{tokenId} Not Found</div>
       </div>
     );
 
@@ -279,7 +253,7 @@ const Approve = ({
           <ActionButton
             defaultText={isApprove ? `Approve` : `Disapprove`}
             successText="Done"
-            defaultIcon={<IconEdit />}
+            defaultIcon={<IconImagePlus />}
             successIcon={<IconCheckSquare />}
             status={status}
             onClick={handleApprove}

@@ -1,28 +1,39 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { formatUnits, parseUnits } from "viem";
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { formatUnits, parseUnits } from 'viem';
 import {
-  useWriteContract,
-  useWaitForTransactionReceipt,
   useAccount,
-  useReadContracts,
   useBalance,
-} from "wagmi";
+  useReadContracts,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from 'wagmi';
 
-import { IAddress, IMint, IStatus } from "../types";
+import { IAddress, IMint, IStatus } from '../types';
 
-import { abi } from "./utils";
+import { abi } from './utils';
 
-import IconArrowDown from "../Icons/IconArrowDown";
-import IconRepeat from "../Icons/IconRepeat";
-import ActionButton from "../ActionButton";
-import EthAddressInput from "./EthAddress";
-import IconInfo from "../Icons/IconInfoOutline";
+import ActionButton from '../ActionButton';
+import IconArrowDown from '../Icons/IconArrowDown';
+import IconInfo from '../Icons/IconInfoOutline';
+import IconRepeat from '../Icons/IconRepeat';
+import EthAddressInput from './EthAddress';
+
+const truncateToDecimals = (num: bigint | undefined, dec = 3) => {
+  const numParts = formatUnits(num ?? 0n, 18)
+    .toString()
+    .split('.');
+  if (numParts.length < 2) {
+    return formatUnits(num ?? 0n, 18).toString();
+  }
+  const decimalPart = numParts[1].substring(0, dec);
+  return `${numParts[0]}.${decimalPart}`;
+};
 
 const calculateTokenAmountFromEth = (
   eth: string,
   tokenPrice: bigint
 ): string => {
-  if (!eth || tokenPrice <= 0n) return "0";
+  if (!eth || tokenPrice <= 0n) return '0';
   const ethAmountInWei = parseUnits(eth, 18);
   const tokenAmount = (ethAmountInWei * 10n ** 18n) / tokenPrice;
   return formatUnits(tokenAmount, 18);
@@ -32,7 +43,7 @@ const calculateEthAmountFromToken = (
   amount: string,
   tokenPrice: bigint
 ): string => {
-  if (!amount || tokenPrice <= 0n) return "0";
+  if (!amount || tokenPrice <= 0n) return '0';
   const tokenAmount = parseUnits(amount, 18);
   const ethAmountInWei = (tokenAmount * tokenPrice) / 10n ** 18n;
   return formatUnits(ethAmountInWei, 18);
@@ -41,11 +52,11 @@ const calculateEthAmountFromToken = (
 const useContracts = (address: IAddress, receiver: IAddress) => {
   return useMemo(
     () => [
-      { address, abi, functionName: "maxSupply" },
-      { address, abi, functionName: "tokenPrice" },
-      { address, abi, functionName: "totalSupply" },
-      { address, abi, functionName: "symbol" },
-      { address, abi, functionName: "balanceOf", args: [receiver] },
+      { address, abi, functionName: 'maxSupply' },
+      { address, abi, functionName: 'tokenPrice' },
+      { address, abi, functionName: 'totalSupply' },
+      { address, abi, functionName: 'symbol' },
+      { address, abi, functionName: 'balanceOf', args: [receiver] },
     ],
     [address]
   ) as any;
@@ -55,10 +66,10 @@ const MintERC20 = ({ address, handle }: IMint) => {
   const { address: accountAddress } = useAccount();
   const { data: balance } = useBalance({ address: accountAddress });
 
-  const functionName = "mint";
+  const functionName = 'mint';
 
   const [receiver, setReceiver] = useState(accountAddress);
-  const [status, setStatus] = useState<IStatus>("idle");
+  const [status, setStatus] = useState<IStatus>('idle');
   const [args, setArgs] = useState<[`0x${string}`, bigint]>();
   const [amount, setAmount] = useState<string | undefined>();
   const [ethAmount, setEthAmount] = useState<string | undefined>();
@@ -94,30 +105,30 @@ const MintERC20 = ({ address, handle }: IMint) => {
   useEffect(() => {
     const data = undefined;
 
-    if (offChain === "error" || onChain === "error") {
-      handle({ data, hash, status: "error" });
-      setStatus("error");
+    if (offChain === 'error' || onChain === 'error') {
+      handle({ data, hash, status: 'error' });
+      setStatus('error');
     }
-    if (onChain === "pending") {
-      if (offChain === "idle") {
-        handle({ data, hash, status: "idle" });
-        setStatus("idle");
-      } else if (offChain === "pending") {
-        handle({ data, hash, status: "wallet" });
-        setStatus("wallet");
-      } else if (offChain === "success") {
-        handle({ data, hash, status: "pending" });
-        setStatus("pending");
+    if (onChain === 'pending') {
+      if (offChain === 'idle') {
+        handle({ data, hash, status: 'idle' });
+        setStatus('idle');
+      } else if (offChain === 'pending') {
+        handle({ data, hash, status: 'wallet' });
+        setStatus('wallet');
+      } else if (offChain === 'success') {
+        handle({ data, hash, status: 'pending' });
+        setStatus('pending');
       }
     }
-    if (onChain === "success") {
-      handle({ data: amount ? [amount] : undefined, hash, status: "success" });
-      setStatus("success");
+    if (onChain === 'success') {
+      handle({ data: amount ? [amount] : undefined, hash, status: 'success' });
+      setStatus('success');
       setAmount(undefined);
       setEthAmount(undefined);
       refetch();
       setTimeout(() => {
-        setStatus("idle");
+        setStatus('idle');
       }, 10_000);
     }
   }, [hash, offChain, onChain]);
@@ -133,7 +144,7 @@ const MintERC20 = ({ address, handle }: IMint) => {
     const value = parseUnits(ethAmount, 18);
     writeContract({ abi, address, functionName, args, value });
 
-    console.log("args", args, value);
+    console.log('args', args, value);
   }, [address, functionName, args, ethAmount]);
 
   const handleAmount = useCallback(
@@ -146,15 +157,15 @@ const MintERC20 = ({ address, handle }: IMint) => {
       )
         return;
 
-      let input = e.currentTarget.value.replace(/[^0-9\.]/g, "");
+      let input = e.currentTarget.value.replace(/[^0-9\.]/g, '');
       if (!input) {
         setAmount(undefined);
         setEthAmount(undefined);
       }
 
       const availableSupply = maxSupply - totalSupply;
-      const [whole, fraction = ""] = input.split(".");
-      let amount = whole + "." + fraction.padEnd(18, "0").slice(0, 18);
+      const [whole, fraction = ''] = input.split('.');
+      let amount = whole + '.' + fraction.padEnd(18, '0').slice(0, 18);
 
       if (parseUnits(amount, 18) > availableSupply) {
         amount = formatUnits(availableSupply, 18);
@@ -180,15 +191,15 @@ const MintERC20 = ({ address, handle }: IMint) => {
       )
         return;
 
-      let input = e.currentTarget.value.replace(/[^0-9\.]/g, "");
+      let input = e.currentTarget.value.replace(/[^0-9\.]/g, '');
       if (!input) {
         setAmount(undefined);
         setEthAmount(undefined);
       }
 
       const availableSupply = maxSupply - totalSupply;
-      const [whole, fraction = ""] = input.split(".");
-      const eth = whole + "." + fraction.padEnd(18, "0").slice(0, 18);
+      const [whole, fraction = ''] = input.split('.');
+      const eth = whole + '.' + fraction.padEnd(18, '0').slice(0, 18);
       let amount = calculateTokenAmountFromEth(eth, tokenPrice);
 
       if (parseUnits(amount, 18) > availableSupply) {
@@ -204,7 +215,7 @@ const MintERC20 = ({ address, handle }: IMint) => {
 
   if (!address)
     return (
-      <div className="flex justify-center items-center text-slate-700 dark:text-slate-500 text-xl font-extrabold">
+      <div className="flex items-center justify-center text-xl font-extrabold text-slate-700 dark:text-slate-500">
         Token Address Not Found
       </div>
     );
@@ -213,9 +224,9 @@ const MintERC20 = ({ address, handle }: IMint) => {
     <div className="min-w-96">
       <div className="w-full">
         <div className="relative flex flex-col items-center justify-between gap-2 rounded-xl p-1">
-          <div className="w-full h-32 bg-slate-50 dark:bg-slate-800 rounded-xl px-4 py-2 border border-slate-50 dark:border-slate-800 hover:border-slate-300 hover:dark:border-slate-700">
+          <div className="h-32 w-full rounded-xl border border-slate-50 bg-slate-50 px-4 py-2 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-800 hover:dark:border-slate-700">
             <label htmlFor="you-pay" className="text-xs text-slate-500">
-              <div className="flex justify-between items-center w-full">
+              <div className="flex w-full items-center justify-between">
                 <div>You Pay</div>
               </div>
             </label>
@@ -223,46 +234,44 @@ const MintERC20 = ({ address, handle }: IMint) => {
               <input
                 type="text"
                 id="you-pay"
-                value={ethAmount ?? ""}
+                value={ethAmount ?? ''}
                 onChange={handleEth}
-                className="block font-extrabold w-full p-4 pl-0 pr-20 text-3xl bg-slate-50 text-slate-600 border-0 rounded-lg dark:bg-slate-800 dark:border-slate-100 dark:placeholder-slate-400 dark:text-slate-50 placeholder:text-slate-300 focus:ring-0 focus:outline-0"
+                className="block w-full rounded-lg border-0 bg-slate-50 p-4 pl-0 pr-20 text-3xl font-extrabold text-slate-600 placeholder:text-slate-300 focus:outline-0 focus:ring-0 dark:border-slate-100 dark:bg-slate-800 dark:text-slate-50 dark:placeholder-slate-400"
                 placeholder="0"
                 required
               />
-              <div className="text-slate-600 font-extrabold inset-y-0 absolute top-4 right-0 h-9 bg-slate-100 rounded-lg text-sm px-4 py-2 dark:text-slate-50 dark:bg-slate-900 shadow-xs">
+              <div className="shadow-xs absolute inset-y-0 right-0 top-4 h-9 rounded-lg bg-slate-100 px-4 py-2 text-sm font-extrabold text-slate-600 dark:bg-slate-900 dark:text-slate-50">
                 {balance?.symbol}
               </div>
               <div className="text-right text-xs text-slate-500">
                 <span className="mr-2 text-slate-300 dark:text-slate-600">
                   Balance:
                 </span>
-                <span>
-                  {parseFloat(formatUnits(balance?.value ?? 0n, 18)).toFixed(3)}
-                </span>
+                <span>{truncateToDecimals(balance?.value)}</span>
               </div>
             </div>
           </div>
 
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform">
             {soldOut ? (
-              <span className="w-10 h-10 text-slate-500 bg-slate-100 dark:bg-slate-800 font-extrabold rounded-xl px-2 py-1 border-2 border-white dark:border-slate-700">
+              <span className="h-10 w-10 rounded-xl border-2 border-white bg-slate-100 px-2 py-1 font-extrabold text-slate-500 dark:border-slate-700 dark:bg-slate-800">
                 Sold Out
               </span>
             ) : (
               <IconArrowDown
                 className={`${
-                  (status === "wallet" || status === "pending") &&
+                  (status === 'wallet' || status === 'pending') &&
                   `animate-bounce`
-                } w-10 h-10 text-slate-500 bg-slate-100 dark:bg-slate-800 font-extrabold rounded-xl px-2 py-1 border-2 border-white dark:border-slate-700`}
+                } h-10 w-10 rounded-xl border-2 border-white bg-slate-100 px-2 py-1 font-extrabold text-slate-500 dark:border-slate-700 dark:bg-slate-800`}
               />
             )}
           </div>
 
-          <div className="w-full h-32 bg-slate-50 dark:bg-slate-800 rounded-xl px-4 py-2 border border-slate-50 dark:border-slate-800 hover:border-slate-300 hover:dark:border-slate-700">
+          <div className="h-32 w-full rounded-xl border border-slate-50 bg-slate-50 px-4 py-2 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-800 hover:dark:border-slate-700">
             <label htmlFor="you-receive" className="text-xs text-slate-500">
-              <div className="flex justify-between items-center w-full">
+              <div className="flex w-full items-center justify-between">
                 <div>You Receive</div>
-                <div className="text-right w-4 h-4 text-slate-300 dark:text-slate-600 hover:text-slate-400 hover:dark:text-slate-700">
+                <div className="h-4 w-4 text-right text-slate-300 hover:text-slate-400 dark:text-slate-600 hover:dark:text-slate-700">
                   <a
                     href={`https://etherscan.io/address/${address}`}
                     target="_blank"
@@ -277,16 +286,16 @@ const MintERC20 = ({ address, handle }: IMint) => {
               <input
                 type="text"
                 id="you-receive"
-                value={amount ?? ""}
+                value={amount ?? ''}
                 onChange={handleAmount}
-                className="block font-extrabold w-full p-4 pl-0 pr-20 text-3xl bg-slate-50 text-slate-600 border-0 rounded-lg dark:bg-slate-800 dark:border-slate-100 dark:placeholder-slate-400 dark:text-slate-50 placeholder:text-slate-300 focus:ring-0 focus:outline-0"
+                className="block w-full rounded-lg border-0 bg-slate-50 p-4 pl-0 pr-20 text-3xl font-extrabold text-slate-600 placeholder:text-slate-300 focus:outline-0 focus:ring-0 dark:border-slate-100 dark:bg-slate-800 dark:text-slate-50 dark:placeholder-slate-400"
                 placeholder="0"
                 required
               />
-              <div className="text-slate-600 font-extrabold inset-y-0 absolute top-4 right-0 h-9 bg-slate-100 rounded-lg text-sm px-4 py-2 dark:text-slate-50 dark:bg-slate-900 shadow-xs">
+              <div className="shadow-xs absolute inset-y-0 right-0 top-4 h-9 rounded-lg bg-slate-100 px-4 py-2 text-sm font-extrabold text-slate-600 dark:bg-slate-900 dark:text-slate-50">
                 {symbol}
               </div>
-              <div className="flex justify-between items-center w-full">
+              <div className="flex w-full items-center justify-between">
                 <div className="relative flex items-center text-xs text-slate-500">
                   <span className="mr-2 text-slate-300 dark:text-slate-600">
                     Receiver:
@@ -298,16 +307,14 @@ const MintERC20 = ({ address, handle }: IMint) => {
                         ? `You will receive tokens`
                         : undefined
                     }
-                    handler={(addr) => setReceiver(addr)}
+                    handler={addr => setReceiver(addr)}
                   />
                 </div>
                 <div className="text-right text-xs text-slate-500">
                   <span className="mr-2 text-slate-300 dark:text-slate-600">
                     Balance:
                   </span>
-                  <span>
-                    {parseFloat(formatUnits(balanceOf ?? 0n, 18)).toFixed(3)}
-                  </span>
+                  <span>{truncateToDecimals(balanceOf)}</span>
                 </div>
               </div>
             </div>

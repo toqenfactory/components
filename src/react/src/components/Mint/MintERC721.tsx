@@ -22,7 +22,6 @@ import IconCheckSquare from '../Icons/IconCheckSquare';
 import IconCopy from '../Icons/IconCopy';
 import IconImagePlus from '../Icons/IconImagePlus';
 import IconMinus from '../Icons/IconMinus';
-import IconPicture from '../Icons/IconPicture';
 import IconPlus from '../Icons/IconPlus';
 import IconTags from '../Icons/IconTags';
 import IconUserReceivedLine from '../Icons/IconUserReceivedLine';
@@ -63,7 +62,7 @@ const MintERC721 = ({ address, steps = true, handle }: IMint) => {
   const onLogs = (logs: any[]) =>
     logs.forEach(log => {
       if (log.transactionHash === hash) {
-        console.log('Transaction:', hash, log?.args);
+        console.log('[Event] Transaction:', hash, log?.args);
         const id = log?.args?.tokenId?.toString() as string | undefined;
         if (id) setNftIds(ids => (ids ? [...ids, id] : [id]));
       }
@@ -145,7 +144,7 @@ const MintERC721 = ({ address, steps = true, handle }: IMint) => {
     if (onChain === 'success') {
       setTimeout(() => {
         if (status !== 'success') {
-          console.error('Transaction:', hash);
+          console.error('[Error] Transaction:', hash);
         }
       }, 15_000);
     }
@@ -423,7 +422,7 @@ const MintERC721 = ({ address, steps = true, handle }: IMint) => {
           <ActionButton
             defaultText={<BtnText />}
             successText="Done"
-            defaultIcon={<IconPicture />}
+            defaultIcon={<IconImagePlus />}
             successIcon={<IconCheckSquare />}
             status={status}
             onClick={handleMint}

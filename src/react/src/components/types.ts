@@ -1,14 +1,14 @@
 export type IAddress = `0x${string}` | undefined;
 
 export type IStatus =
-  | "idle"
-  | "wallet"
-  | "pending"
-  | "success"
-  | "error"
+  | 'idle'
+  | 'wallet'
+  | 'pending'
+  | 'success'
+  | 'error'
   | undefined;
 
-export type IFunctionName = "approve" | "setApprovalForAll" | undefined;
+export type IFunctionName = 'approve' | 'setApprovalForAll' | undefined;
 
 export type IArgs = [`0x${string}`, bigint | boolean] | undefined;
 
@@ -87,3 +87,20 @@ export interface EthAddressInputProps {
   defaultText?: string | undefined;
   handler: (newAddress: `0x${string}` | undefined) => void;
 }
+
+export interface ICreate {
+  standart: 'ERC20' | 'ERC721';
+  toqen: `0x${string}` | undefined;
+  steps?: boolean;
+  handle: ({
+    data,
+    hash,
+    status,
+  }: {
+    data: `0x${string}` | undefined;
+    hash: `0x${string}` | undefined;
+    status: IStatus;
+  }) => void;
+}
+
+export type ICreateArgs = [string, string, bigint, bigint, string?] | undefined;

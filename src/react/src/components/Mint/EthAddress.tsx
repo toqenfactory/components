@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect, FC } from "react";
+import React, { FC, useEffect, useRef, useState } from 'react';
 
-import { EthAddressInputProps } from "../types";
+import { EthAddressInputProps } from '../types';
 
-import IconIconEdit from "../Icons/IconIconEdit";
+import IconIconEdit from '../Icons/IconIconEdit';
 
 const EthAddressInput: FC<EthAddressInputProps> = ({
   initialAddress,
@@ -37,15 +37,15 @@ const EthAddressInput: FC<EthAddressInputProps> = ({
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [address]);
 
   return (
     <div
-      className="w-full flex justify-end items-center"
+      className="flex w-full items-center justify-end"
       onClick={() => !isEditing && setIsEditing(true)}
     >
       {isEditing ? (
@@ -55,19 +55,19 @@ const EthAddressInput: FC<EthAddressInputProps> = ({
           onChange={handleAddressChange}
           onBlur={finalizeEditing}
           autoFocus
-          className="w-full text-xs rounded-sm px-1 font-mono bg-transparent focus:outline focus:outline-slate-300 dark:focus:outline-slate-700"
+          className="w-full rounded-sm bg-transparent px-1 font-mono text-xs focus:outline focus:outline-slate-300 dark:focus:outline-slate-700"
           spellCheck={false}
         />
       ) : (
-        <div className="flex justify-end items-center">
-          <span className="text-slate-400 text-xs">
+        <div className="flex items-center justify-end">
+          <span className="text-xs text-slate-500">
             {defaultText ?? (
-              <span className="block font-mono translate-y-[1px]">
+              <span className="block translate-y-[1px] font-mono">
                 {shortenAddress(address)}
               </span>
             )}
           </span>
-          <IconIconEdit className="w-4 ml-2 hover:cursor-pointer hover:text-slate-500 text-slate-400" />
+          <IconIconEdit className="ml-2 w-4 text-slate-500 hover:scale-110 hover:cursor-pointer hover:text-slate-300" />
         </div>
       )}
     </div>

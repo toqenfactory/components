@@ -1,114 +1,141 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { parseUnits } from 'viem';
 import {
-  useWriteContract,
+  useAccount,
+  useBalance,
   useWaitForTransactionReceipt,
   useWatchContractEvent,
-} from "wagmi";
-import { parseUnits } from "viem";
+  useWriteContract,
+} from 'wagmi';
 
-import { abi, generate } from "./utils";
-import Steps from "./Steps";
-import IconChevronRight from "../Icons/IconChevronRight";
-import IconChevronLeft from "../Icons/IconChevronLeft";
-import IconGrid from "../Icons/IconGrid";
-import IconCopy from "../Icons/IconCopy";
+import { IAddress, ICreate, ICreateArgs, IMetadata, IStatus } from '../types';
 
-const mtd =
-  "ipfs://bafybeieyb62vnkv46zr5mw3nfqlhcxt7v2frd2tu6k3cwgkqfgwmnyflme/";
+import { abi, generate } from './utils';
+
+import Steps from '../Steps';
+
+import ActionButton from '../ActionButton';
+import IconArrowsRandom from '../Icons/IconArrowsRandom';
+import IconCheckSquare from '../Icons/IconCheckSquare';
+import IconCoins from '../Icons/IconCoins';
+import IconCopy from '../Icons/IconCopy';
+import IconCreateDashboard from '../Icons/IconCreateDashboard';
+import IconIpfs from '../Icons/IconIpfs';
+import IconPointOfSale from '../Icons/IconPointOfSale';
+
+const IPFS_GATEWAY = 'https://ipfs.io/ipfs/';
+const ipfs =
+  'ipfs://bafybeieyb62vnkv46zr5mw3nfqlhcxt7v2frd2tu6k3cwgkqfgwmnyflme/';
 
 const Create = ({
   standart,
   toqen: address,
+  steps = true,
   handle,
-}: {
-  standart: "ERC20" | "ERC721";
-  toqen: `0x${string}` | undefined;
-  handle: ({
-    data,
-    status,
-  }: {
-    data: `0x${string}` | undefined;
-    status: "idle" | "wallet" | "pending" | "success" | "error";
-  }) => void;
-}) => {
-  const {
-    writeContract,
-    status: offChain,
-    data: hash,
-    error,
-  } = useWriteContract(); // offChain: idle -> pending -> success
-  const { data, status: onChain } = useWaitForTransactionReceipt({ hash }); // onChain: pending -> success
+}: ICreate) => {
+  const { address: accountAddress } = useAccount();
+  const { data: balance } = useBalance({ address: accountAddress });
 
-  const eventName = "TokenCreated";
-  const functionName = useMemo(() => `create${standart}`, [standart]);
+  const isNFT = useMemo(() => standart === 'ERC721', [standart]);
 
-  const [step, setStep] = useState(1);
-  const [status, setStatus] = useState("");
+  const eventName = 'TokenCreated';
+  const functionName = `create${standart}`;
 
-  const [args, setArgs] = useState<any>();
-  const [tokenAddress, setTokenAddress] = useState<`0x${string}` | undefined>();
+  const [status, setStatus] = useState<IStatus>();
+  const [args, setArgs] = useState<ICreateArgs>();
+  const [tokenAddress, setTokenAddress] = useState<IAddress>();
+  const [name, setName] = useState<string | undefined>();
+  const [symbol, setSymbol] = useState<string | undefined>();
+  const [maxSupply, setMaxSupply] = useState<string | undefined>();
+  const [tokenPrice, setTokenPrice] = useState<string | undefined>();
+  const [baseURI, setBaseURI] = useState<string | undefined>();
+  const [metadata, setMetadata] = useState<IMetadata | undefined>();
 
-  const [name, setName] = useState("");
-  const [symbol, setSymbol] = useState("");
-  const [maxSupply, setMaxSupply] = useState("18000000");
-  const [tokenPrice, setTokenPrice] = useState("0.000001");
+  const onLogs = (logs: any[]) =>
+    logs.forEach(log => {
+      if (log.transactionHash === hash) {
+        console.log('[Event] Transaction:', hash, log?.args);
+        const addr = log?.args?.tokenAddress as IAddress;
+        if (addr) setTokenAddress(addr);
+      }
+    });
 
-  const [baseURI, setBaseURI] = useState(mtd);
+  useWatchContractEvent({ address, abi, eventName, onLogs });
+  const { writeContract, status: offChain, data: hash } = useWriteContract();
+  const { data, status: onChain } = useWaitForTransactionReceipt({ hash });
 
   useEffect(() => {
+    console.log('[Receipt] Transaction:', hash, data?.logs);
+    const addr = data?.logs?.[0]?.topics?.[1] as IAddress;
+    if (addr) setTokenAddress(`0x${addr.slice(26)}`);
+  }, [data]);
+
+  useEffect(() => {
+    if (!name || !symbol || !maxSupply || (!baseURI && isNFT)) return;
     const price = tokenPrice ? parseUnits(tokenPrice, 18) : 0n;
     setArgs(
-      standart === "ERC20"
-        ? [name, symbol, parseUnits(maxSupply, 18), price]
-        : [name, symbol, parseUnits(maxSupply, 0), price, baseURI]
+      isNFT
+        ? [name, symbol, parseUnits(maxSupply, 0), price, baseURI]
+        : [name, symbol, parseUnits(maxSupply, 18), price]
     );
   }, [name, symbol, maxSupply, tokenPrice, baseURI]);
 
   useEffect(() => {
-    if (offChain === "error" || onChain === "error") {
-      handle({ data: undefined, status: "error" });
-      setStatus("error");
+    const data = undefined;
+
+    if (offChain === 'error' || onChain === 'error') {
+      handle({ data, hash, status: 'error' });
+      setStatus('error');
     }
-    if (onChain === "pending") {
-      if (offChain === "idle") {
-        handle({ data: undefined, status: "idle" });
-        setStatus("idle");
-      } else if (offChain === "pending") {
-        handle({ data: undefined, status: "wallet" });
-        setStatus("wallet");
-      } else if (offChain === "success") {
-        handle({ data: undefined, status: "pending" });
-        setStatus("pending");
+    if (onChain === 'pending') {
+      if (offChain === 'idle') {
+        handle({ data, hash, status: 'idle' });
+        setStatus('idle');
+      } else if (offChain === 'pending') {
+        handle({ data, hash, status: 'wallet' });
+        setStatus('wallet');
+      } else if (offChain === 'success') {
+        handle({ data, hash, status: 'pending' });
+        setStatus('pending');
       }
     }
-    if (onChain === "success") {
-      handle({ data: tokenAddress, status: "success" });
-      setStatus("success");
+    if (tokenAddress) {
+      handle({ data: tokenAddress, hash, status: 'success' });
+      setStatus('success');
+    }
+  }, [offChain, onChain, hash, tokenAddress]);
+
+  useEffect(() => {
+    if (maxSupply === undefined || baseURI === undefined) return;
+
+    if (baseURI === '') {
+      setBaseURI(undefined);
+      setMetadata(undefined);
+      return;
     }
 
-    const tokenAddressByReceipt = data?.logs?.[0]?.topics?.[1];
-    if (tokenAddressByReceipt) {
-      if (!tokenAddress)
-        setTokenAddress(`0x${tokenAddressByReceipt.slice(26)}`);
-    }
-  }, [offChain, onChain, data]);
+    const fetchMetadata = async () => {
+      const response = await fetch(
+        /^ipfs:\/\//.test(baseURI)
+          ? `${IPFS_GATEWAY}${baseURI.replace(/ipfs:\/\//g, '')}1`
+          : `${baseURI}1`
+      );
 
-  useWatchContractEvent({
-    address,
-    abi,
-    eventName,
-    onLogs(logs) {
-      logs.forEach((log: any) => {
-        if (log.transactionHash === hash && log?.args?.tokenAddress) {
-          setTokenAddress(log.args.tokenAddress);
-        }
-      });
-    },
-  });
+      if (!response.ok) return;
+      const metadata = await response.json();
+      metadata.image = /^ipfs/.test(metadata.image)
+        ? `${IPFS_GATEWAY}${metadata.image.replace(/ipfs:\/\//g, '')}`
+        : metadata.image;
+
+      setMetadata(metadata);
+    };
+
+    fetchMetadata();
+  }, [baseURI]);
 
   const handleCreate = useCallback(() => {
     if (!address) return;
-    console.log(address, functionName, args);
+    console.log(address, functionName, args, metadata);
     writeContract({ abi, address, functionName, args });
   }, [abi, address, functionName, args]);
 
@@ -117,285 +144,177 @@ const Create = ({
     setName(random.name);
     setSymbol(random.symbol);
     setTokenAddress(undefined);
-    setStatus("");
-    setStep(1);
+    setStatus(undefined);
   }, []);
 
-  useEffect(() => handleGenerate(), [standart]);
+  useEffect(() => {
+    handleGenerate();
+    setMaxSupply('18000000');
+    setTokenPrice('0.00002');
+    isNFT && setBaseURI(ipfs);
+  }, [standart]);
 
   return (
-    <div className="flex flex-col gap-2 min-w-96">
-      <Steps step={step} />
-      {step === 1 && (
-        <>
-          <div className="w-full">
-            <label
-              htmlFor="search"
-              className="mb-2 text-sm font-medium text-slate-900 sr-only dark:text-slate-50"
-            >
-              Token Name
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                Token Name:
-              </div>
-              <input
-                type="search"
-                id="search"
-                className="block shadow-sm font-extrabold w-full p-4 ps-32 text-lg text-slate-900 border-0 rounded-lg  dark:bg-slate-700 dark:border-slate-100 dark:placeholder-slate-400 dark:text-slate-50 placeholder:text-slate-100 focus:ring-0 focus:outline-0"
-                placeholder="Token Name"
-                value={name}
-                onChange={(e) => {
-                  setName(e.currentTarget.value);
-                }}
-                required
-              />
-              <button
-                type="submit"
-                className="text-slate-950 absolute end-3 bottom-3 bg-slate-100 hover:bg-slate-50 focus:ring-0 focus:outline-none rounded-lg text-sm px-4 py-2 dark:text-slate-50 dark:bg-slate-800 dark:hover:bg-slate-900 ring-0 outline-0 shadow-xs"
-                onClick={handleGenerate}
-              >
-                AI 😂 Generate
-              </button>
+    <div className="w-96 text-slate-950 dark:text-slate-50">
+      <div className="flex w-full flex-col gap-2">
+        {steps && (
+          <div>
+            <Steps status={status} />
+          </div>
+        )}
+        <div className="flex h-6 items-center justify-between font-extrabold">
+          {tokenAddress ? (
+            <div className="w-full flex-none text-center">
+              Your {symbol} Token Address:
             </div>
-          </div>
-          <div className="w-full">
-            <input
-              type="text"
-              className="block w-full p-0 text-center text-6xl font-extrabold text-slate-700 dark:text-slate-50 placeholder:text-slate-100 dark:placeholder:text-slate-700 ring-0 border-0 outline-0 bg-transparent"
-              placeholder="Token Symbol"
-              value={symbol}
-              onChange={(e) => {
-                setSymbol(e.currentTarget.value.toUpperCase());
-              }}
-              required
-            />
-          </div>
-        </>
-      )}
-      {step === 2 && (
-        <>
-          <div className="w-full">
-            <label
-              htmlFor="max-supply"
-              className="mb-2 text-sm font-medium text-slate-900 sr-only dark:text-slate-50"
-            >
-              Max Supply
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                Max Supply:
-              </div>
-              <input
-                type="text"
-                id="max-supply"
-                className="block shadow-sm w-full p-4 ps-32 text-lg font-extrabold text-slate-900 border-0 rounded-lg  dark:bg-slate-700 dark:border-slate-100 dark:placeholder-slate-400 dark:text-slate-50 placeholder:text-slate-100 focus:ring-0 focus:outline-0"
-                placeholder="18000000"
-                value={maxSupply}
-                onChange={(e) => {
-                  setMaxSupply(e.currentTarget.value);
-                }}
-                required
-              />
-              <div className="text-slate-950 absolute end-3 bottom-3 bg-slate-100 rounded-lg text-sm px-4 py-2 dark:bg-slate-800 dark:text-slate-50">
-                {symbol}
-              </div>
-            </div>
-          </div>
-          <div className="w-full">
-            <label
-              htmlFor="max-supply"
-              className="mb-2 text-sm font-medium text-slate-900 sr-only dark:text-slate-50"
-            >
-              Token Price
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                1{" "}
-                <div className="text-slate-950 bg-slate-100 rounded-lg text-sm px-4 py-2 mx-2 dark:bg-slate-800 dark:text-slate-50">
-                  {symbol}
-                </div>{" "}
-                =
-              </div>
-              <input
-                type="text"
-                id="max-supply"
-                className="block shadow-sm w-full p-4 ps-32 text-lg font-extrabold text-slate-900 border-0 rounded-lg  dark:bg-slate-700 dark:border-slate-100 dark:placeholder-slate-400 dark:text-slate-50 placeholder:text-slate-100 focus:ring-0 focus:outline-0"
-                placeholder="18000000"
-                value={tokenPrice}
-                onChange={(e) => {
-                  setTokenPrice(e.currentTarget.value);
-                }}
-                required
-              />
-              <div className="text-slate-950 absolute end-3 bottom-3 bg-slate-100 rounded-lg text-sm px-4 py-2 dark:bg-slate-800 dark:text-slate-50 ring-0 outline-0">
-                ETH
-              </div>
-            </div>
-          </div>
-          {standart === "ERC721" && (
-            <div className="w-full">
-              <label
-                htmlFor="max-supply"
-                className="mb-2 text-sm font-medium text-slate-900 sr-only dark:text-slate-50"
-              >
-                Base URI
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                  Base URI:
-                </div>
+          ) : (
+            <>
+              <div className="mx-1 flex-1">
                 <input
                   type="text"
-                  id="max-supply"
-                  className="block shadow-sm w-full p-4 ps-32 text-lg font-extrabold text-slate-900 border-0 rounded-lg dark:bg-slate-700 dark:border-slate-100 dark:placeholder-slate-400 dark:text-slate-50 placeholder:text-slate-100 focus:ring-0 focus:outline-0"
-                  placeholder="ipfs://CID/json/"
-                  value={baseURI}
-                  onChange={(e) => {
-                    setBaseURI(e.currentTarget.value);
-                  }}
-                  required
+                  className="w-full rounded-md bg-transparent px-1 focus:shadow-sm focus:outline-0 focus:ring-0"
+                  value={name}
+                  onChange={e => setName(e.currentTarget.value)}
                 />
-                <a
-                  href="https://bafybeieyb62vnkv46zr5mw3nfqlhcxt7v2frd2tu6k3cwgkqfgwmnyflme.ipfs.dweb.link/"
-                  target="_blank"
+              </div>
+              <div className="flex-none">
+                <div
+                  title="AI 😂 Generator"
+                  className="w-6 rounded-md bg-slate-300 p-1 text-slate-50 hover:scale-110 hover:cursor-pointer hover:bg-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-900"
+                  onClick={handleGenerate}
                 >
-                  <div className="absolute end-3 bottom-3 rounded-lg text-sm px-4 py-2 bg-slate-100 text-slate-950 dark:bg-slate-800 dark:text-slate-50 ring-0 outline-0">
-                    ?
+                  <IconArrowsRandom />
+                </div>
+              </div>
+              <div className="flex-none">
+                <input
+                  type="text"
+                  className="w-16 rounded-md bg-transparent px-1 text-right focus:shadow-sm focus:outline-0 focus:ring-0"
+                  value={symbol}
+                  onChange={e => setSymbol(e.currentTarget.value)}
+                />
+              </div>
+            </>
+          )}
+        </div>
+        <div className="flex w-full flex-col gap-2">
+          {tokenAddress ? (
+            <div className="flex content-center items-center justify-center">
+              <div className="my-2 flex items-center rounded-md bg-teal-50 px-2 py-2 text-xs font-extrabold text-teal-900 dark:bg-teal-900 dark:text-teal-100">
+                {tokenAddress}
+                <IconCopy
+                  className="ml-2 h-4 w-4 hover:scale-110 hover:cursor-pointer"
+                  onClick={() => {
+                    navigator.clipboard
+                      .writeText(tokenAddress)
+                      .catch(err =>
+                        console.error('Failed to copy text: ', err)
+                      );
+                  }}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-none gap-2">
+              {isNFT && metadata && (
+                <div className="flex-none">
+                  <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-xl">
+                    <img
+                      src={metadata.image}
+                      className="h-24 w-24 rounded-xl object-cover"
+                      alt={`NFT Collection`}
+                    ></img>
                   </div>
-                </a>
+                </div>
+              )}
+              {isNFT && !metadata && (
+                <div className="flex-none">
+                  <div className="flex h-24 w-24 animate-pulse items-center justify-center rounded-xl bg-slate-300"></div>
+                </div>
+              )}
+              <div className="flex flex-1 items-center">
+                <ul role="list" className="w-full list-none space-y-3">
+                  <li>
+                    <div className="flex items-center justify-between text-xs">
+                      <div className="mr-1 flex flex-none items-center justify-between text-slate-400 dark:text-slate-500">
+                        <span className="mr-1 h-6 w-6">
+                          <IconCoins />
+                        </span>
+                        <span className="text-xs">Max&nbsp;Supply</span>
+                      </div>
+                      <div className="flex flex-1 items-center justify-end">
+                        <input
+                          type="text"
+                          className="w-full rounded-md bg-transparent p-1 text-right focus:shadow-sm focus:outline-0 focus:ring-0"
+                          value={maxSupply}
+                          onChange={e => setMaxSupply(e.currentTarget.value)}
+                        />
+                        <div className="mx-1 font-extrabold">{symbol}</div>
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                    <div className="flex w-full items-center justify-between text-xs">
+                      <div className="mr-1 flex flex-none items-center justify-between text-slate-400 dark:text-slate-500">
+                        <span className="mr-1 h-6 w-6">
+                          <IconPointOfSale />
+                        </span>
+                        <span className="text-xs">
+                          <span className="font-extrabold">1</span>&nbsp;
+                          <span className="font-extrabold text-slate-950 dark:text-slate-50">
+                            {symbol}
+                          </span>
+                          &nbsp;=
+                        </span>
+                      </div>
+                      <div className="flex flex-1 items-center justify-end">
+                        <input
+                          type="text"
+                          className="w-full rounded-md bg-transparent p-1 text-right focus:shadow-sm focus:outline-0 focus:ring-0"
+                          value={tokenPrice}
+                          onChange={e => setTokenPrice(e.currentTarget.value)}
+                        />
+                        <div className="mx-1 text-slate-400 dark:text-slate-500">
+                          {balance?.symbol}
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                  {isNFT && (
+                    <li>
+                      <div className="flex items-center justify-between text-xs">
+                        <div className="mr-1 flex flex-none items-center justify-between text-slate-400 dark:text-slate-500">
+                          <span className="mr-1 h-6 w-6">
+                            <IconIpfs />
+                          </span>
+                          <span className="text-xs">Base&nbsp;URI</span>
+                        </div>
+                        <div className="flex flex-1 items-center justify-center">
+                          <input
+                            type="text"
+                            className="w-full rounded bg-transparent p-1 focus:shadow-sm focus:outline-0 focus:ring-0"
+                            value={baseURI}
+                            onChange={e => setBaseURI(e.currentTarget.value)}
+                          />
+                        </div>
+                      </div>
+                    </li>
+                  )}
+                </ul>
               </div>
             </div>
           )}
-        </>
-      )}
-      {step === 3 &&
-        (tokenAddress ? (
-          <div className="flex justify-center items-center content-center">
-            <div className="flex items-center text-slate-50 text-md font-extrabold my-4 rounded-md py-4 px-8 bg-slate-600 dark:bg-slate-950">
-              <div className="font-extrabold text-slate-100 bg-slate-500 rounded-md px-2 py-1 mx-1">
-                ${symbol}
-              </div>{" "}
-              : {tokenAddress}{" "}
-              <IconCopy
-                className="ml-4 w-6 h-6 hover:cursor-pointer hover:scale-105"
-                onClick={() => {
-                  navigator.clipboard
-                    .writeText(tokenAddress)
-                    .catch((err) =>
-                      console.error("Failed to copy text: ", err)
-                    );
-                }}
-              />
-            </div>
-          </div>
-        ) : (
-          <ul
-            role="list"
-            className="marker:text-slate-800 dark:marker:text-slate-100 list-disc pl-5 space-y-3 text-slate-400"
-          >
-            <li>
-              $
-              <span className="bg-slate-100 text-slate-950 dark:bg-slate-800 dark:text-slate-50 rounded-md px-2 py-1 mx-1">
-                {symbol}
-              </span>
-              :{" "}
-              <span className="text-slate-950 dark:text-slate-50 font-extrabold">
-                {name}
-              </span>
-            </li>
-            <li>
-              Max Sypply:{" "}
-              <span className="text-slate-950 dark:text-slate-50 font-extrabold">
-                {maxSupply.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-              </span>{" "}
-              <span className="bg-slate-100 text-slate-950 dark:bg-slate-800 dark:text-slate-50 rounded-md px-2 py-1 mx-1">
-                {symbol}
-              </span>
-            </li>
-            <li>
-              <span>Mint Price:</span> 1{" "}
-              <span className="bg-slate-100 text-slate-950 dark:bg-slate-800 dark:text-slate-50 rounded-md px-2 py-1 mx-1">
-                {symbol}
-              </span>{" "}
-              ={" "}
-              <span className="font-extrabold text-slate-950 dark:text-slate-50">
-                {tokenPrice}
-              </span>{" "}
-              ETH
-            </li>
-            {standart === "ERC721" && (
-              <li>
-                Base URI:{" "}
-                <span className="font-extrabold text-slate-950 dark:text-slate-50">
-                  <a
-                    href={baseURI}
-                    target="_blank"
-                    className=" underline underline-offset-8 decoration-dotted"
-                  >
-                    {`${baseURI.substring(0, 12)}..${baseURI.substring(
-                      baseURI.length - 12
-                    )}`}
-                  </a>
-                </span>
-              </li>
-            )}
-          </ul>
-        ))}
-      <div className="w-full flex gap-2 mt-4">
-        {step > 1 && (
-          <div className="flex-1">
-            <button
-              onClick={() => setStep((step) => step - 1)}
-              type="button"
-              className="group relative overflow-hidden w-full text-slate-400 hover:text-slate-600 bg-gradient-to-l from-slate-100 to-slate-300 hover:bg-gradient-to-l hover:from-slate-300 hover:to-slate-300 dark:text-slate-400 dark:hover:text-slate-200 dark:bg-gradient-to-l dark:from-slate-500 dark:to-slate-700 dark:hover:bg-gradient-to-l dark:hover:from-slate-700 dark:hover:to-slate-700 focus:ring-0 focus:outline-none font-medium rounded-lg text-xl px-5 py-2.5 text-center lowercase"
-            >
-              prev
-              <span className="absolute w-16 h-16 inset-y-0 -top-2 left-0 opacity-10 fill-slate-700 group-hover:-translate-x-1">
-                <IconChevronLeft />
-              </span>
-            </button>
-          </div>
-        )}
-        {step < 3 && (
-          <div className="flex-1">
-            <button
-              onClick={() => setStep((step) => step + 1)}
-              type="button"
-              className="group relative overflow-hidden w-full text-slate-400 hover:text-slate-600 bg-gradient-to-r from-slate-100 to-slate-300 hover:bg-gradient-to-r hover:from-slate-300 hover:to-slate-300 dark:text-slate-400 dark:hover:text-slate-200 dark:bg-gradient-to-r dark:from-slate-500 dark:to-slate-700 dark:hover:bg-gradient-to-r dark:hover:from-slate-700 dark:hover:to-slate-700 focus:ring-0 focus:outline-none font-medium rounded-lg text-xl px-5 py-2.5 text-center lowercase"
-            >
-              next
-              <span className="absolute w-16 h-16 inset-y-0 -top-2 right-0 opacity-10 fill-slate-700 group-hover:translate-x-1">
-                <IconChevronRight />
-              </span>
-            </button>
-          </div>
-        )}
-        {step === 3 && status !== "success" && (
-          <div className="flex-1">
-            <button
-              onClick={handleCreate}
-              type="button"
-              disabled={status === "pending"}
-              className="group relative overflow-hidden w-full text-slate-400 hover:text-slate-600 bg-gradient-to-r from-slate-100 to-slate-300 hover:bg-gradient-to-r hover:from-slate-300 hover:to-slate-300 dark:text-slate-400 dark:hover:text-slate-200 dark:bg-gradient-to-r dark:from-slate-500 dark:to-slate-700 dark:hover:bg-gradient-to-r dark:hover:from-slate-700 dark:hover:to-slate-700 focus:ring-0 focus:outline-none font-medium rounded-lg text-xl px-5 py-2.5 text-center lowercase"
-            >
-              {status === "wallet"
-                ? `open wallet ...`
-                : status === "pending"
-                ? `please wait ...`
-                : `create`}
-              <span
-                className={`absolute w-12 h-12 inset-y-0 -top-0 right-2 opacity-10 fill-slate-700 ${
-                  status === "wallet" || status === "pending"
-                    ? `animate-ping`
-                    : `group-hover:scale-110`
-                }`}
-              >
-                <IconGrid />
-              </span>
-            </button>
-          </div>
-        )}
+        </div>
+        <div className="w-full">
+          <ActionButton
+            defaultText="Create"
+            successText="Done"
+            defaultIcon={<IconCreateDashboard />}
+            successIcon={<IconCheckSquare />}
+            status={status}
+            onClick={handleCreate}
+          />
+        </div>
       </div>
     </div>
   );

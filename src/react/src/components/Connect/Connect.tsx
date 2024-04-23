@@ -1,4 +1,4 @@
-import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { useAccount, useConnect, useDisconnect } from 'wagmi';
 
 const Connect = () => {
   const { connectors, connect } = useConnect();
@@ -6,11 +6,11 @@ const Connect = () => {
   const { address } = useAccount();
 
   return address ? (
-    <div className="flex flex-col">
+    <div className="flex flex-col items-center justify-center">
       <div>{address}</div>
       <div>
         <button
-          className="mt-2 py-2 px-5 bg-neutral-500 text-white font-semibold rounded-xl shadow-md hover:bg-neutral-700 focus:outline-none focus:ring focus:ring-neutral-400 focus:ring-opacity-75"
+          className="mt-2 rounded-xl bg-neutral-500 px-5 py-2 font-semibold text-white shadow-md hover:bg-neutral-700 focus:outline-none focus:ring focus:ring-neutral-400 focus:ring-opacity-75"
           onClick={() => disconnect()}
         >
           Disconnect
@@ -18,34 +18,34 @@ const Connect = () => {
       </div>
     </div>
   ) : (
-    <div className="flex justify-center items-center gap-2 w-full h-full">
+    <div className="flex h-full w-full items-center justify-center gap-2">
       {connectors?.length ? (
         connectors.map((connector, i) => (
           <div
             key={i}
-            className="w-1/2 hover:cursor-pointer hover:scale-105"
+            className="w-1/2 hover:scale-105 hover:cursor-pointer"
             onClick={() => connect({ connector })}
           >
             <img
               src={connector.icon}
-              className="w-full h-full rounded-xl"
+              className="h-full w-full rounded-xl"
             ></img>
           </div>
         ))
       ) : (
-        <div className="w-full h-full">
+        <div className="h-full w-full">
           <a
             href="http://metamask.io"
             target="_blank"
-            className="underline underline-offset-4 decoration-dotted"
+            className="underline decoration-dotted underline-offset-4"
           >
             Install Metamask
-          </a>{" "}
-          Or{" "}
+          </a>{' '}
+          Or{' '}
           <a
             href="https://brave.com"
             target="_blank"
-            className="underline underline-offset-4 decoration-dotted"
+            className="underline decoration-dotted underline-offset-4"
           >
             Use Brave Browser
           </a>
