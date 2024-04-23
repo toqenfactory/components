@@ -1,89 +1,84 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { parseUnits } from 'viem';
 import {
-  useWriteContract,
   useWaitForTransactionReceipt,
   useWatchContractEvent,
-} from "wagmi";
-import { parseUnits } from "viem";
+  useWriteContract,
+} from 'wagmi';
 
-import { abi, generate } from "./utils";
-import Steps from "./Steps";
-import IconChevronRight from "../Icons/IconChevronRight";
-import IconChevronLeft from "../Icons/IconChevronLeft";
-import IconGrid from "../Icons/IconGrid";
-import IconCopy from "../Icons/IconCopy";
+import IconChevronLeft from '../Icons/IconChevronLeft';
+import IconChevronRight from '../Icons/IconChevronRight';
+import IconCopy from '../Icons/IconCopy';
+import IconGrid from '../Icons/IconGrid';
+import Steps from './Steps';
+import { abi, generate } from './utils';
 
 const mtd =
-  "ipfs://bafybeieyb62vnkv46zr5mw3nfqlhcxt7v2frd2tu6k3cwgkqfgwmnyflme/";
+  'ipfs://bafybeieyb62vnkv46zr5mw3nfqlhcxt7v2frd2tu6k3cwgkqfgwmnyflme/';
 
 const Create = ({
   standart,
   toqen: address,
   handle,
 }: {
-  standart: "ERC20" | "ERC721";
+  standart: 'ERC20' | 'ERC721';
   toqen: `0x${string}` | undefined;
   handle: ({
     data,
     status,
   }: {
     data: `0x${string}` | undefined;
-    status: "idle" | "wallet" | "pending" | "success" | "error";
+    status: 'idle' | 'wallet' | 'pending' | 'success' | 'error';
   }) => void;
 }) => {
-  const {
-    writeContract,
-    status: offChain,
-    data: hash,
-    error,
-  } = useWriteContract(); // offChain: idle -> pending -> success
+  const { writeContract, status: offChain, data: hash } = useWriteContract(); // offChain: idle -> pending -> success
   const { data, status: onChain } = useWaitForTransactionReceipt({ hash }); // onChain: pending -> success
 
-  const eventName = "TokenCreated";
+  const eventName = 'TokenCreated';
   const functionName = useMemo(() => `create${standart}`, [standart]);
 
   const [step, setStep] = useState(1);
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState('');
 
   const [args, setArgs] = useState<any>();
   const [tokenAddress, setTokenAddress] = useState<`0x${string}` | undefined>();
 
-  const [name, setName] = useState("");
-  const [symbol, setSymbol] = useState("");
-  const [maxSupply, setMaxSupply] = useState("18000000");
-  const [tokenPrice, setTokenPrice] = useState("0.000001");
+  const [name, setName] = useState('');
+  const [symbol, setSymbol] = useState('');
+  const [maxSupply, setMaxSupply] = useState('18000000');
+  const [tokenPrice, setTokenPrice] = useState('0.000001');
 
   const [baseURI, setBaseURI] = useState(mtd);
 
   useEffect(() => {
     const price = tokenPrice ? parseUnits(tokenPrice, 18) : 0n;
     setArgs(
-      standart === "ERC20"
+      standart === 'ERC20'
         ? [name, symbol, parseUnits(maxSupply, 18), price]
         : [name, symbol, parseUnits(maxSupply, 0), price, baseURI]
     );
   }, [name, symbol, maxSupply, tokenPrice, baseURI]);
 
   useEffect(() => {
-    if (offChain === "error" || onChain === "error") {
-      handle({ data: undefined, status: "error" });
-      setStatus("error");
+    if (offChain === 'error' || onChain === 'error') {
+      handle({ data: undefined, status: 'error' });
+      setStatus('error');
     }
-    if (onChain === "pending") {
-      if (offChain === "idle") {
-        handle({ data: undefined, status: "idle" });
-        setStatus("idle");
-      } else if (offChain === "pending") {
-        handle({ data: undefined, status: "wallet" });
-        setStatus("wallet");
-      } else if (offChain === "success") {
-        handle({ data: undefined, status: "pending" });
-        setStatus("pending");
+    if (onChain === 'pending') {
+      if (offChain === 'idle') {
+        handle({ data: undefined, status: 'idle' });
+        setStatus('idle');
+      } else if (offChain === 'pending') {
+        handle({ data: undefined, status: 'wallet' });
+        setStatus('wallet');
+      } else if (offChain === 'success') {
+        handle({ data: undefined, status: 'pending' });
+        setStatus('pending');
       }
     }
-    if (onChain === "success") {
-      handle({ data: tokenAddress, status: "success" });
-      setStatus("success");
+    if (onChain === 'success') {
+      handle({ data: tokenAddress, status: 'success' });
+      setStatus('success');
     }
 
     const tokenAddressByReceipt = data?.logs?.[0]?.topics?.[1];
@@ -117,42 +112,42 @@ const Create = ({
     setName(random.name);
     setSymbol(random.symbol);
     setTokenAddress(undefined);
-    setStatus("");
+    setStatus('');
     setStep(1);
   }, []);
 
   useEffect(() => handleGenerate(), [standart]);
 
   return (
-    <div className="flex flex-col gap-2 min-w-96">
+    <div className="flex min-w-96 flex-col gap-2">
       <Steps step={step} />
       {step === 1 && (
         <>
           <div className="w-full">
             <label
               htmlFor="search"
-              className="mb-2 text-sm font-medium text-slate-900 sr-only dark:text-slate-50"
+              className="sr-only mb-2 text-sm font-medium text-slate-900 dark:text-slate-50"
             >
               Token Name
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+              <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
                 Token Name:
               </div>
               <input
                 type="search"
                 id="search"
-                className="block shadow-sm font-extrabold w-full p-4 ps-32 text-lg text-slate-900 border-0 rounded-lg  dark:bg-slate-700 dark:border-slate-100 dark:placeholder-slate-400 dark:text-slate-50 placeholder:text-slate-100 focus:ring-0 focus:outline-0"
+                className="block w-full rounded-lg border-0 p-4 ps-32 text-lg font-extrabold text-slate-900 shadow-sm  placeholder:text-slate-100 focus:outline-0 focus:ring-0 dark:border-slate-100 dark:bg-slate-700 dark:text-slate-50 dark:placeholder-slate-400"
                 placeholder="Token Name"
                 value={name}
-                onChange={(e) => {
+                onChange={e => {
                   setName(e.currentTarget.value);
                 }}
                 required
               />
               <button
                 type="submit"
-                className="text-slate-950 absolute end-3 bottom-3 bg-slate-100 hover:bg-slate-50 focus:ring-0 focus:outline-none rounded-lg text-sm px-4 py-2 dark:text-slate-50 dark:bg-slate-800 dark:hover:bg-slate-900 ring-0 outline-0 shadow-xs"
+                className="shadow-xs absolute bottom-3 end-3 rounded-lg bg-slate-100 px-4 py-2 text-sm text-slate-950 outline-0 ring-0 hover:bg-slate-50 focus:outline-none focus:ring-0 dark:bg-slate-800 dark:text-slate-50 dark:hover:bg-slate-900"
                 onClick={handleGenerate}
               >
                 AI 😂 Generate
@@ -162,10 +157,10 @@ const Create = ({
           <div className="w-full">
             <input
               type="text"
-              className="block w-full p-0 text-center text-6xl font-extrabold text-slate-700 dark:text-slate-50 placeholder:text-slate-100 dark:placeholder:text-slate-700 ring-0 border-0 outline-0 bg-transparent"
+              className="block w-full border-0 bg-transparent p-0 text-center text-6xl font-extrabold text-slate-700 outline-0 ring-0 placeholder:text-slate-100 dark:text-slate-50 dark:placeholder:text-slate-700"
               placeholder="Token Symbol"
               value={symbol}
-              onChange={(e) => {
+              onChange={e => {
                 setSymbol(e.currentTarget.value.toUpperCase());
               }}
               required
@@ -178,26 +173,26 @@ const Create = ({
           <div className="w-full">
             <label
               htmlFor="max-supply"
-              className="mb-2 text-sm font-medium text-slate-900 sr-only dark:text-slate-50"
+              className="sr-only mb-2 text-sm font-medium text-slate-900 dark:text-slate-50"
             >
               Max Supply
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+              <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
                 Max Supply:
               </div>
               <input
                 type="text"
                 id="max-supply"
-                className="block shadow-sm w-full p-4 ps-32 text-lg font-extrabold text-slate-900 border-0 rounded-lg  dark:bg-slate-700 dark:border-slate-100 dark:placeholder-slate-400 dark:text-slate-50 placeholder:text-slate-100 focus:ring-0 focus:outline-0"
+                className="block w-full rounded-lg border-0 p-4 ps-32 text-lg font-extrabold text-slate-900 shadow-sm  placeholder:text-slate-100 focus:outline-0 focus:ring-0 dark:border-slate-100 dark:bg-slate-700 dark:text-slate-50 dark:placeholder-slate-400"
                 placeholder="18000000"
                 value={maxSupply}
-                onChange={(e) => {
+                onChange={e => {
                   setMaxSupply(e.currentTarget.value);
                 }}
                 required
               />
-              <div className="text-slate-950 absolute end-3 bottom-3 bg-slate-100 rounded-lg text-sm px-4 py-2 dark:bg-slate-800 dark:text-slate-50">
+              <div className="absolute bottom-3 end-3 rounded-lg bg-slate-100 px-4 py-2 text-sm text-slate-950 dark:bg-slate-800 dark:text-slate-50">
                 {symbol}
               </div>
             </div>
@@ -205,53 +200,53 @@ const Create = ({
           <div className="w-full">
             <label
               htmlFor="max-supply"
-              className="mb-2 text-sm font-medium text-slate-900 sr-only dark:text-slate-50"
+              className="sr-only mb-2 text-sm font-medium text-slate-900 dark:text-slate-50"
             >
               Token Price
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                1{" "}
-                <div className="text-slate-950 bg-slate-100 rounded-lg text-sm px-4 py-2 mx-2 dark:bg-slate-800 dark:text-slate-50">
+              <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
+                1{' '}
+                <div className="mx-2 rounded-lg bg-slate-100 px-4 py-2 text-sm text-slate-950 dark:bg-slate-800 dark:text-slate-50">
                   {symbol}
-                </div>{" "}
+                </div>{' '}
                 =
               </div>
               <input
                 type="text"
                 id="max-supply"
-                className="block shadow-sm w-full p-4 ps-32 text-lg font-extrabold text-slate-900 border-0 rounded-lg  dark:bg-slate-700 dark:border-slate-100 dark:placeholder-slate-400 dark:text-slate-50 placeholder:text-slate-100 focus:ring-0 focus:outline-0"
+                className="block w-full rounded-lg border-0 p-4 ps-32 text-lg font-extrabold text-slate-900 shadow-sm  placeholder:text-slate-100 focus:outline-0 focus:ring-0 dark:border-slate-100 dark:bg-slate-700 dark:text-slate-50 dark:placeholder-slate-400"
                 placeholder="18000000"
                 value={tokenPrice}
-                onChange={(e) => {
+                onChange={e => {
                   setTokenPrice(e.currentTarget.value);
                 }}
                 required
               />
-              <div className="text-slate-950 absolute end-3 bottom-3 bg-slate-100 rounded-lg text-sm px-4 py-2 dark:bg-slate-800 dark:text-slate-50 ring-0 outline-0">
+              <div className="absolute bottom-3 end-3 rounded-lg bg-slate-100 px-4 py-2 text-sm text-slate-950 outline-0 ring-0 dark:bg-slate-800 dark:text-slate-50">
                 ETH
               </div>
             </div>
           </div>
-          {standart === "ERC721" && (
+          {standart === 'ERC721' && (
             <div className="w-full">
               <label
                 htmlFor="max-supply"
-                className="mb-2 text-sm font-medium text-slate-900 sr-only dark:text-slate-50"
+                className="sr-only mb-2 text-sm font-medium text-slate-900 dark:text-slate-50"
               >
                 Base URI
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
                   Base URI:
                 </div>
                 <input
                   type="text"
                   id="max-supply"
-                  className="block shadow-sm w-full p-4 ps-32 text-lg font-extrabold text-slate-900 border-0 rounded-lg dark:bg-slate-700 dark:border-slate-100 dark:placeholder-slate-400 dark:text-slate-50 placeholder:text-slate-100 focus:ring-0 focus:outline-0"
+                  className="block w-full rounded-lg border-0 p-4 ps-32 text-lg font-extrabold text-slate-900 shadow-sm placeholder:text-slate-100 focus:outline-0 focus:ring-0 dark:border-slate-100 dark:bg-slate-700 dark:text-slate-50 dark:placeholder-slate-400"
                   placeholder="ipfs://CID/json/"
                   value={baseURI}
-                  onChange={(e) => {
+                  onChange={e => {
                     setBaseURI(e.currentTarget.value);
                   }}
                   required
@@ -260,7 +255,7 @@ const Create = ({
                   href="https://bafybeieyb62vnkv46zr5mw3nfqlhcxt7v2frd2tu6k3cwgkqfgwmnyflme.ipfs.dweb.link/"
                   target="_blank"
                 >
-                  <div className="absolute end-3 bottom-3 rounded-lg text-sm px-4 py-2 bg-slate-100 text-slate-950 dark:bg-slate-800 dark:text-slate-50 ring-0 outline-0">
+                  <div className="absolute bottom-3 end-3 rounded-lg bg-slate-100 px-4 py-2 text-sm text-slate-950 outline-0 ring-0 dark:bg-slate-800 dark:text-slate-50">
                     ?
                   </div>
                 </a>
@@ -271,20 +266,18 @@ const Create = ({
       )}
       {step === 3 &&
         (tokenAddress ? (
-          <div className="flex justify-center items-center content-center">
-            <div className="flex items-center text-slate-50 text-md font-extrabold my-4 rounded-md py-4 px-8 bg-slate-600 dark:bg-slate-950">
-              <div className="font-extrabold text-slate-100 bg-slate-500 rounded-md px-2 py-1 mx-1">
+          <div className="flex content-center items-center justify-center">
+            <div className="text-md my-4 flex items-center rounded-md bg-slate-600 px-8 py-4 font-extrabold text-slate-50 dark:bg-slate-950">
+              <div className="mx-1 rounded-md bg-slate-500 px-2 py-1 font-extrabold text-slate-100">
                 ${symbol}
-              </div>{" "}
-              : {tokenAddress}{" "}
+              </div>{' '}
+              : {tokenAddress}{' '}
               <IconCopy
-                className="ml-4 w-6 h-6 hover:cursor-pointer hover:scale-105"
+                className="ml-4 h-6 w-6 hover:scale-105 hover:cursor-pointer"
                 onClick={() => {
                   navigator.clipboard
                     .writeText(tokenAddress)
-                    .catch((err) =>
-                      console.error("Failed to copy text: ", err)
-                    );
+                    .catch(err => console.error('Failed to copy text: ', err));
                 }}
               />
             </div>
@@ -292,46 +285,46 @@ const Create = ({
         ) : (
           <ul
             role="list"
-            className="marker:text-slate-800 dark:marker:text-slate-100 list-disc pl-5 space-y-3 text-slate-400"
+            className="list-disc space-y-3 pl-5 text-slate-400 marker:text-slate-800 dark:marker:text-slate-100"
           >
             <li>
               $
-              <span className="bg-slate-100 text-slate-950 dark:bg-slate-800 dark:text-slate-50 rounded-md px-2 py-1 mx-1">
+              <span className="mx-1 rounded-md bg-slate-100 px-2 py-1 text-slate-950 dark:bg-slate-800 dark:text-slate-50">
                 {symbol}
               </span>
-              :{" "}
-              <span className="text-slate-950 dark:text-slate-50 font-extrabold">
+              :{' '}
+              <span className="font-extrabold text-slate-950 dark:text-slate-50">
                 {name}
               </span>
             </li>
             <li>
-              Max Sypply:{" "}
-              <span className="text-slate-950 dark:text-slate-50 font-extrabold">
-                {maxSupply.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-              </span>{" "}
-              <span className="bg-slate-100 text-slate-950 dark:bg-slate-800 dark:text-slate-50 rounded-md px-2 py-1 mx-1">
+              Max Sypply:{' '}
+              <span className="font-extrabold text-slate-950 dark:text-slate-50">
+                {maxSupply.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+              </span>{' '}
+              <span className="mx-1 rounded-md bg-slate-100 px-2 py-1 text-slate-950 dark:bg-slate-800 dark:text-slate-50">
                 {symbol}
               </span>
             </li>
             <li>
-              <span>Mint Price:</span> 1{" "}
-              <span className="bg-slate-100 text-slate-950 dark:bg-slate-800 dark:text-slate-50 rounded-md px-2 py-1 mx-1">
+              <span>Mint Price:</span> 1{' '}
+              <span className="mx-1 rounded-md bg-slate-100 px-2 py-1 text-slate-950 dark:bg-slate-800 dark:text-slate-50">
                 {symbol}
-              </span>{" "}
-              ={" "}
+              </span>{' '}
+              ={' '}
               <span className="font-extrabold text-slate-950 dark:text-slate-50">
                 {tokenPrice}
-              </span>{" "}
+              </span>{' '}
               ETH
             </li>
-            {standart === "ERC721" && (
+            {standart === 'ERC721' && (
               <li>
-                Base URI:{" "}
+                Base URI:{' '}
                 <span className="font-extrabold text-slate-950 dark:text-slate-50">
                   <a
                     href={baseURI}
                     target="_blank"
-                    className=" underline underline-offset-8 decoration-dotted"
+                    className=" underline decoration-dotted underline-offset-8"
                   >
                     {`${baseURI.substring(0, 12)}..${baseURI.substring(
                       baseURI.length - 12
@@ -342,16 +335,16 @@ const Create = ({
             )}
           </ul>
         ))}
-      <div className="w-full flex gap-2 mt-4">
+      <div className="mt-4 flex w-full gap-2">
         {step > 1 && (
           <div className="flex-1">
             <button
-              onClick={() => setStep((step) => step - 1)}
+              onClick={() => setStep(step => step - 1)}
               type="button"
-              className="group relative overflow-hidden w-full text-slate-400 hover:text-slate-600 bg-gradient-to-l from-slate-100 to-slate-300 hover:bg-gradient-to-l hover:from-slate-300 hover:to-slate-300 dark:text-slate-400 dark:hover:text-slate-200 dark:bg-gradient-to-l dark:from-slate-500 dark:to-slate-700 dark:hover:bg-gradient-to-l dark:hover:from-slate-700 dark:hover:to-slate-700 focus:ring-0 focus:outline-none font-medium rounded-lg text-xl px-5 py-2.5 text-center lowercase"
+              className="group relative w-full overflow-hidden rounded-lg bg-gradient-to-l from-slate-100 to-slate-300 px-5 py-2.5 text-center text-xl font-medium lowercase text-slate-400 hover:bg-gradient-to-l hover:from-slate-300 hover:to-slate-300 hover:text-slate-600 focus:outline-none focus:ring-0 dark:bg-gradient-to-l dark:from-slate-500 dark:to-slate-700 dark:text-slate-400 dark:hover:bg-gradient-to-l dark:hover:from-slate-700 dark:hover:to-slate-700 dark:hover:text-slate-200"
             >
               prev
-              <span className="absolute w-16 h-16 inset-y-0 -top-2 left-0 opacity-10 fill-slate-700 group-hover:-translate-x-1">
+              <span className="absolute inset-y-0 -top-2 left-0 h-16 w-16 fill-slate-700 opacity-10 group-hover:-translate-x-1">
                 <IconChevronLeft />
               </span>
             </button>
@@ -360,33 +353,33 @@ const Create = ({
         {step < 3 && (
           <div className="flex-1">
             <button
-              onClick={() => setStep((step) => step + 1)}
+              onClick={() => setStep(step => step + 1)}
               type="button"
-              className="group relative overflow-hidden w-full text-slate-400 hover:text-slate-600 bg-gradient-to-r from-slate-100 to-slate-300 hover:bg-gradient-to-r hover:from-slate-300 hover:to-slate-300 dark:text-slate-400 dark:hover:text-slate-200 dark:bg-gradient-to-r dark:from-slate-500 dark:to-slate-700 dark:hover:bg-gradient-to-r dark:hover:from-slate-700 dark:hover:to-slate-700 focus:ring-0 focus:outline-none font-medium rounded-lg text-xl px-5 py-2.5 text-center lowercase"
+              className="group relative w-full overflow-hidden rounded-lg bg-gradient-to-r from-slate-100 to-slate-300 px-5 py-2.5 text-center text-xl font-medium lowercase text-slate-400 hover:bg-gradient-to-r hover:from-slate-300 hover:to-slate-300 hover:text-slate-600 focus:outline-none focus:ring-0 dark:bg-gradient-to-r dark:from-slate-500 dark:to-slate-700 dark:text-slate-400 dark:hover:bg-gradient-to-r dark:hover:from-slate-700 dark:hover:to-slate-700 dark:hover:text-slate-200"
             >
               next
-              <span className="absolute w-16 h-16 inset-y-0 -top-2 right-0 opacity-10 fill-slate-700 group-hover:translate-x-1">
+              <span className="absolute inset-y-0 -top-2 right-0 h-16 w-16 fill-slate-700 opacity-10 group-hover:translate-x-1">
                 <IconChevronRight />
               </span>
             </button>
           </div>
         )}
-        {step === 3 && status !== "success" && (
+        {step === 3 && status !== 'success' && (
           <div className="flex-1">
             <button
               onClick={handleCreate}
               type="button"
-              disabled={status === "pending"}
-              className="group relative overflow-hidden w-full text-slate-400 hover:text-slate-600 bg-gradient-to-r from-slate-100 to-slate-300 hover:bg-gradient-to-r hover:from-slate-300 hover:to-slate-300 dark:text-slate-400 dark:hover:text-slate-200 dark:bg-gradient-to-r dark:from-slate-500 dark:to-slate-700 dark:hover:bg-gradient-to-r dark:hover:from-slate-700 dark:hover:to-slate-700 focus:ring-0 focus:outline-none font-medium rounded-lg text-xl px-5 py-2.5 text-center lowercase"
+              disabled={status === 'pending'}
+              className="group relative w-full overflow-hidden rounded-lg bg-gradient-to-r from-slate-100 to-slate-300 px-5 py-2.5 text-center text-xl font-medium lowercase text-slate-400 hover:bg-gradient-to-r hover:from-slate-300 hover:to-slate-300 hover:text-slate-600 focus:outline-none focus:ring-0 dark:bg-gradient-to-r dark:from-slate-500 dark:to-slate-700 dark:text-slate-400 dark:hover:bg-gradient-to-r dark:hover:from-slate-700 dark:hover:to-slate-700 dark:hover:text-slate-200"
             >
-              {status === "wallet"
+              {status === 'wallet'
                 ? `open wallet ...`
-                : status === "pending"
-                ? `please wait ...`
-                : `create`}
+                : status === 'pending'
+                  ? `please wait ...`
+                  : `create`}
               <span
-                className={`absolute w-12 h-12 inset-y-0 -top-0 right-2 opacity-10 fill-slate-700 ${
-                  status === "wallet" || status === "pending"
+                className={`absolute inset-y-0 -top-0 right-2 h-12 w-12 fill-slate-700 opacity-10 ${
+                  status === 'wallet' || status === 'pending'
                     ? `animate-ping`
                     : `group-hover:scale-110`
                 }`}

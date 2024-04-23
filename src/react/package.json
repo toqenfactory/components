@@ -1,7 +1,7 @@
 {
   "name": "@toqen/react",
   "private": false,
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Create/Mint/Approve ERC20/ERC721 Tokens",
   "keywords": ["react", "ui", "components", "library", "ERC20", "ERC721", "token", "NFT", "mint", "approve"],
   "author": "Peace Duck",
@@ -10,7 +10,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc && ./node_modules/.bin/postcss src/styles/tailwind.css -o dist/styles.css"
+    "build": "tsc && ./node_modules/.bin/postcss src/components/styles.css -o dist/styles.css"
   },
   "peerDependencies": {
     "@tanstack/react-query": "^5.x",

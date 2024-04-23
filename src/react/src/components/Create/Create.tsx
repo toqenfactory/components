@@ -149,8 +149,8 @@ const Create = ({
 
   useEffect(() => {
     handleGenerate();
-    setMaxSupply('18000000');
-    setTokenPrice('0.00002');
+    setMaxSupply(isNFT ? '200' : '18000000');
+    setTokenPrice(isNFT ? '0.1' : '0.00002');
     isNFT && setBaseURI(ipfs);
   }, [standart]);
 

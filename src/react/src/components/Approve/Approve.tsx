@@ -63,7 +63,6 @@ const Approve = ({
     [to, operator, spender]
   );
 
-  const [isMint, setIsMint] = useState<boolean | undefined>(false);
   const [status, setStatus] = useState<IStatus>('idle');
   const [functionName, setFunctionName] = useState<IFunctionName>();
   const [args, setArgs] = useState<IArgs>();

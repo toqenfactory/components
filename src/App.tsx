@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAccount } from "wagmi";
-import { Approve, Connect, Create, Mint } from "./react/src/components";
+import { Approve, Connect, Create, Mint } from "./react/src/components"; // ./react/src/components
 
 function App() {
   const { address } = useAccount();
