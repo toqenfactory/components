@@ -169,7 +169,7 @@ const Create = ({
             </div>
           ) : (
             <>
-              <div className="mx-1 flex-1">
+              <div className="mr-1 flex-1">
                 <input
                   type="text"
                   className="w-full rounded-md bg-transparent px-1 focus:shadow-sm focus:outline-0 focus:ring-0"

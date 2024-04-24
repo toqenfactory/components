@@ -6,7 +6,7 @@ import "./index.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 
-import { http, createConfig } from "wagmi";
+import { createConfig, http } from "wagmi";
 
 const queryClient = new QueryClient();
 
@@ -15,8 +15,8 @@ const localhost = {
   name: "Localhost",
   nativeCurrency: {
     decimals: 18,
-    name: "Go",
-    symbol: "GO",
+    name: "Ether",
+    symbol: "ETH",
   },
   rpcUrls: {
     default: { http: ["http://127.0.0.1:8545"] },
