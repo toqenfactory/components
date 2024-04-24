@@ -12,39 +12,34 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - name: Use Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20.x"
           registry-url: "https://registry.npmjs.org"
           scope: "@toqen"
 
-      - name: Bump package version
-        run: npm version patch --no-git-tag-version
-        working-directory: ./src/react
-
-      - name: Bump package version
+      - name: Bump package version and commit changes
         run: |
           npm version patch --no-git-tag-version
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add ./src/react/package.json
-          git commit -m "Bump version to ${{ steps.version.outputs.new_version }}"
+          git add package.json # Adjust this line if package.json is deeper in the directory structure
+          git commit -m "Bump version to $(node -p "require('./package.json').version")"
         working-directory: ./src/react
-        id: version
 
       - name: Push changes
         run: git push
 
-      - name: Install packages
-        run: npm i
+      - name: Install main packages
+        run: npm install
+
+      - name: Install component packages
+        run: npm install
+        working-directory: ./src/react
 
       - name: Copy README to components directory
         run: cp README.md ./src/react/
-
-      - name: Install packages
-        run: npm i
-        working-directory: ./src/react
 
       - name: Build package
         run: npm run build
