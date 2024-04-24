@@ -19,20 +19,6 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           scope: "@toqen"
 
-      - name: Bump package version and commit changes
-        run: |
-          npm version patch --no-git-tag-version
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add package.json # Adjust this line if package.json is deeper in the directory structure
-          git commit -m "Bump version to $(node -p "require('./package.json').version")"
-        working-directory: ./src/react
-
-      - name: Push changes
-        run: git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-
       - name: Install main packages
         run: npm install
 
