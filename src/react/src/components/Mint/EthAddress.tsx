@@ -51,7 +51,7 @@ const EthAddressInput: FC<EthAddressInputProps> = ({
       {isEditing ? (
         <input
           ref={inputRef}
-          value={address}
+          value={address ?? ''}
           onChange={handleAddressChange}
           onBlur={finalizeEditing}
           autoFocus

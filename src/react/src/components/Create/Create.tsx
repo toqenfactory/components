@@ -173,7 +173,7 @@ const Create = ({
                 <input
                   type="text"
                   className="w-full rounded-md bg-transparent px-1 focus:shadow-sm focus:outline-0 focus:ring-0"
-                  value={name}
+                  value={name ?? ''}
                   onChange={e => setName(e.currentTarget.value)}
                 />
               </div>
@@ -190,7 +190,7 @@ const Create = ({
                 <input
                   type="text"
                   className="w-16 rounded-md bg-transparent px-1 text-right focus:shadow-sm focus:outline-0 focus:ring-0"
-                  value={symbol}
+                  value={symbol ?? ''}
                   onChange={e => setSymbol(e.currentTarget.value)}
                 />
               </div>
@@ -220,7 +220,7 @@ const Create = ({
                 <div className="flex-none">
                   <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-xl">
                     <img
-                      src={metadata.image}
+                      src={metadata.image ?? ''}
                       className="h-24 w-24 rounded-xl object-cover"
                       alt={`NFT Collection`}
                     ></img>
@@ -246,7 +246,7 @@ const Create = ({
                         <input
                           type="text"
                           className="w-full rounded-md bg-transparent p-1 text-right focus:shadow-sm focus:outline-0 focus:ring-0"
-                          value={maxSupply}
+                          value={maxSupply ?? ''}
                           onChange={e => setMaxSupply(e.currentTarget.value)}
                         />
                         <div className="mx-1 font-extrabold">{symbol}</div>
@@ -271,7 +271,7 @@ const Create = ({
                         <input
                           type="text"
                           className="w-full rounded-md bg-transparent p-1 text-right focus:shadow-sm focus:outline-0 focus:ring-0"
-                          value={tokenPrice}
+                          value={tokenPrice ?? ''}
                           onChange={e => setTokenPrice(e.currentTarget.value)}
                         />
                         <div className="mx-1 text-slate-400 dark:text-slate-500">
@@ -293,7 +293,7 @@ const Create = ({
                           <input
                             type="text"
                             className="w-full rounded bg-transparent p-1 focus:shadow-sm focus:outline-0 focus:ring-0"
-                            value={baseURI}
+                            value={baseURI ?? ''}
                             onChange={e => setBaseURI(e.currentTarget.value)}
                           />
                         </div>
