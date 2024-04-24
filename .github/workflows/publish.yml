@@ -30,6 +30,8 @@ jobs:
 
       - name: Push changes
         run: git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
       - name: Install main packages
         run: npm install
