@@ -19,6 +19,23 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           scope: "@toqen"
 
+      - name: Bump package version
+        run: npm version patch --no-git-tag-version
+        working-directory: ./src/react
+
+      - name: Bump package version
+        run: |
+          npm version patch --no-git-tag-version
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add ./src/react/package.json
+          git commit -m "Bump version to ${{ steps.version.outputs.new_version }}"
+        working-directory: ./src/react
+        id: version
+
+      - name: Push changes
+        run: git push
+
       - name: Install packages
         run: npm i
 
@@ -27,10 +44,6 @@ jobs:
 
       - name: Install packages
         run: npm i
-        working-directory: ./src/react
-
-      - name: Bump package version
-        run: npm version patch --no-git-tag-version
         working-directory: ./src/react
 
       - name: Build package
