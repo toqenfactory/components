@@ -23,6 +23,7 @@ import Skeleton from '../Skeletons';
 import Steps from '../Steps';
 import { Info, Spender, Token } from './Rows';
 
+import BaseComponent from '../BaseComponent';
 import IconCheckSquare from '../Icons/IconCheckSquare';
 import IconImagePlus from '../Icons/IconImagePlus';
 
@@ -55,6 +56,7 @@ const Approve = ({
   spender,
   value,
   steps = true,
+  dark,
   handle,
 }: IApprove) => {
   const { address: account } = useAccount();
@@ -203,7 +205,7 @@ const Approve = ({
   if (isLoading) return <Skeleton isOneNft={tokenId !== undefined} />;
 
   return (
-    <div className="flex min-w-96 flex-col gap-2">
+    <BaseComponent dark={dark}>
       <div className="flex flex-col gap-2">
         <div className="flex flex-col gap-2">
           {steps && (
@@ -259,7 +261,7 @@ const Approve = ({
           />
         </div>
       </div>
-    </div>
+    </BaseComponent>
   );
 };
 

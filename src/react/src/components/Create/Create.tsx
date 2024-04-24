@@ -15,6 +15,7 @@ import { abi, generate } from './utils';
 import Steps from '../Steps';
 
 import ActionButton from '../ActionButton';
+import BaseComponent from '../BaseComponent';
 import IconArrowsRandom from '../Icons/IconArrowsRandom';
 import IconCheckSquare from '../Icons/IconCheckSquare';
 import IconCoins from '../Icons/IconCoins';
@@ -31,6 +32,7 @@ const Create = ({
   standart,
   toqen: address,
   steps = true,
+  dark,
   handle,
 }: ICreate) => {
   const { address: accountAddress } = useAccount();
@@ -155,8 +157,8 @@ const Create = ({
   }, [standart]);
 
   return (
-    <div className="w-96 text-slate-950 dark:text-slate-50">
-      <div className="flex w-full flex-col gap-2">
+    <BaseComponent dark={dark}>
+      <div className="dark flex w-full flex-col gap-2 text-slate-950 dark:text-slate-50">
         {steps && (
           <div>
             <Steps status={status} />
@@ -316,7 +318,7 @@ const Create = ({
           />
         </div>
       </div>
-    </div>
+    </BaseComponent>
   );
 };
 

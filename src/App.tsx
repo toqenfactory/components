@@ -10,6 +10,10 @@ function App() {
   const [component, setComponent] = useState(<></>);
   const [title, setTitle] = useState("");
 
+  const [toqen, setToqen] = useState<`0x${string}`>(
+    "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+  );
+
   const [erc20, setErc20] = useState<`0x${string}` | undefined>();
   const [erc721, setErc721] = useState<`0x${string}` | undefined>();
 
@@ -19,6 +23,15 @@ function App() {
     <>
       <div className="flex flex-col justify-center items-center h-full w-full m-0 p-0 text-white dark:text-white">
         <h1 className="text-6xl m-6">Create - Mint - Approve</h1>
+        <div>
+          Toqen:{" "}
+          <input
+            type="text"
+            className="rounded-xl border-0 bg-transparent w-96 p-4"
+            value={toqen}
+            onChange={(e) => setToqen(e.currentTarget.value as `0x${string}`)}
+          />
+        </div>
         <div className="text-xl">Components:</div>
       </div>
       <div className="flex flex-col justify-start items-start h-full w-full m-0 p-8 text-white dark:text-white">
@@ -56,7 +69,7 @@ function App() {
               <h2 className="text-2xl">Create ERC20 Token</h2>
               <div>
                 <code className="text-xs bg-slate-600/35 rounded-xl px-4 py-2">
-                  {`<Create standart="ERC20" toqen="TOQEN Contract Address" />`}
+                  {`<Create standart="ERC20" toqen="TOQEN Contract Address" dark />`}
                 </code>
               </div>
               <div className="flex gap-4">
@@ -66,7 +79,8 @@ function App() {
                     setComponent(
                       <Create
                         standart="ERC20"
-                        toqen="0x5FbDB2315678afecb367f032d93F642f64180aa3"
+                        toqen={toqen}
+                        dark
                         handle={({ data, status }) => {
                           console.log("data", data);
                           console.log("status", status);
@@ -89,7 +103,7 @@ function App() {
               <h2 className="text-2xl">Create ERC721 Token</h2>
               <div>
                 <code className="text-xs bg-slate-600/35 rounded-xl px-4 py-2">
-                  {`<Create standart="ERC721" toqen="TOQEN Contract Address" />`}
+                  {`<Create standart="ERC721" toqen="TOQEN Contract Address" dark />`}
                 </code>
               </div>
               <div className="flex gap-4">
@@ -99,7 +113,8 @@ function App() {
                     setComponent(
                       <Create
                         standart="ERC721"
-                        toqen="0x5FbDB2315678afecb367f032d93F642f64180aa3"
+                        toqen={toqen}
+                        dark
                         handle={({ data, status }) => {
                           console.log("data", data);
                           console.log("status", status);
@@ -122,7 +137,7 @@ function App() {
               <h2 className="text-2xl">Mint ERC20 Token</h2>
               <div>
                 <code className="text-xs bg-slate-600/35 rounded-xl px-4 py-2">
-                  {`<Mint standart="ERC20" address="${erc20 ?? `ERC20 Address`}" />`}
+                  {`<Mint standart="ERC20" address="${erc20 ?? `ERC20 Address`}" dark />`}
                 </code>
               </div>
               <div className="flex gap-4">
@@ -132,6 +147,7 @@ function App() {
                     setComponent(
                       <Mint
                         address={erc20}
+                        dark
                         handle={({ data, status }) => {
                           console.log("data", data);
                           console.log("status", status);
@@ -153,7 +169,7 @@ function App() {
               <h2 className="text-2xl">Mint ERC721 Token</h2>
               <div>
                 <code className="text-xs bg-slate-600/35 rounded-xl px-4 py-2">
-                  {`<Mint standart="ERC721" address="${erc721 ?? `ERC721 Address`}" steps={true} />`}
+                  {`<Mint standart="ERC721" address="${erc721 ?? `ERC721 Address`}" steps dark />`}
                 </code>
               </div>
               <div className="flex gap-4">
@@ -163,6 +179,8 @@ function App() {
                     setComponent(
                       <Mint
                         address={erc721}
+                        steps
+                        dark
                         handle={({ data, status }) => {
                           console.log("data", data);
                           console.log("status", status);
@@ -204,7 +222,7 @@ function App() {
               <h2 className="text-2xl">Approve ERC20 Token</h2>
               <div>
                 <code className="text-xs bg-slate-600/35 rounded-xl px-4 py-2">
-                  {`<Approve address="${erc20 ?? `ERC20 Address`}" spender="Address" value="10" steps={true} />`}
+                  {`<Approve address="${erc20 ?? `ERC20 Address`}" spender="Address" value="10" steps dark />`}
                 </code>
               </div>
               <div className="flex gap-4">
@@ -216,6 +234,8 @@ function App() {
                         address={erc20}
                         spender={spender}
                         value={"10"}
+                        steps
+                        dark
                         handle={({ data, status }) => {
                           console.log("data", data);
                           console.log("status", status);
@@ -237,7 +257,7 @@ function App() {
               <h2 className="text-2xl">Approve ERC721 Token</h2>
               <div>
                 <code className="text-xs bg-slate-600/35 rounded-xl px-4 py-2">
-                  {`<Approve address="${erc721 ?? `ERC721 Address`}" to="Address" tokenId="3" steps={true} />`}
+                  {`<Approve address="${erc721 ?? `ERC721 Address`}" to="Address" tokenId="3" steps dark />`}
                 </code>
               </div>
               <div className="flex gap-4">
@@ -249,6 +269,8 @@ function App() {
                         address={erc721}
                         to={spender}
                         tokenId={"3"}
+                        steps
+                        dark
                         handle={({ data, status }) => {
                           console.log("data", data);
                           console.log("status", status);
@@ -292,7 +314,7 @@ function App() {
               <h2 className="text-2xl">Approve ALL ERC721 Token</h2>
               <div>
                 <code className="text-xs bg-slate-600/35 rounded-xl px-4 py-2">
-                  {`<Approve address="${erc721 ?? `ERC721 Address`}" operator="Address" approved={true} steps={true} />`}
+                  {`<Approve address="${erc721 ?? `ERC721 Address`}" operator="Address" approved={true} steps dark />`}
                 </code>
               </div>
               <div className="flex gap-4">
@@ -304,6 +326,8 @@ function App() {
                         address={erc721}
                         operator={spender}
                         approved={true}
+                        steps
+                        dark
                         handle={({ data, status }) => {
                           console.log("data", data);
                           console.log("status", status);
@@ -325,7 +349,7 @@ function App() {
               <h2 className="text-2xl">Disapprove ALL ERC721 Token</h2>
               <div>
                 <code className="text-xs bg-slate-600/35 rounded-xl px-4 py-2">
-                  {`<Approve address="${erc721 ?? `ERC721 Address`}" operator="Address" approved={false} steps={true} />`}
+                  {`<Approve address="${erc721 ?? `ERC721 Address`}" operator="Address" approved={false} steps dark />`}
                 </code>
               </div>
               <div className="flex gap-4">
@@ -337,6 +361,8 @@ function App() {
                         address={erc721}
                         operator={spender}
                         approved={false}
+                        steps
+                        dark
                         handle={({ data, status }) => {
                           console.log("data", data);
                           console.log("status", status);

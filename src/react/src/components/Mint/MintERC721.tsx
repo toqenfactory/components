@@ -380,13 +380,6 @@ const MintERC721 = ({ address, steps = true, handle }: IMint) => {
     </div>
   );
 
-  if (!address)
-    return (
-      <div className="flex items-center justify-center text-xl font-extrabold text-slate-700 dark:text-slate-500">
-        Token Address Not Found
-      </div>
-    );
-
   if (soldOut)
     return (
       <div className="flex items-center justify-center text-xl font-extrabold text-slate-700 dark:text-slate-500">
@@ -395,39 +388,37 @@ const MintERC721 = ({ address, steps = true, handle }: IMint) => {
     );
 
   return (
-    <div className="w-96">
+    <div className="flex w-full flex-col gap-2">
       <div className="flex w-full flex-col gap-2">
-        <div className="flex w-full flex-col gap-2">
-          {steps && (
-            <div>
-              <Steps status={status} />
+        {steps && (
+          <div>
+            <Steps status={status} />
+          </div>
+        )}
+        <div className="flex flex-none gap-2">
+          {metadata && image && (
+            <div className="flex-none">
+              <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-xl">
+                <img
+                  src={image}
+                  className="h-24 w-24 rounded-xl object-cover"
+                  alt={`NFT Collection: ${address}`}
+                ></img>
+              </div>
             </div>
           )}
-          <div className="flex flex-none gap-2">
-            {metadata && image && (
-              <div className="flex-none">
-                <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-xl">
-                  <img
-                    src={image}
-                    className="h-24 w-24 rounded-xl object-cover"
-                    alt={`NFT Collection: ${address}`}
-                  ></img>
-                </div>
-              </div>
-            )}
-            {status === 'success' ? <Success /> : <Mint />}
-          </div>
+          {status === 'success' ? <Success /> : <Mint />}
         </div>
-        <div className="w-full">
-          <ActionButton
-            defaultText={<BtnText />}
-            successText="Done"
-            defaultIcon={<IconImagePlus />}
-            successIcon={<IconCheckSquare />}
-            status={status}
-            onClick={handleMint}
-          />
-        </div>
+      </div>
+      <div className="w-full">
+        <ActionButton
+          defaultText={<BtnText />}
+          successText="Done"
+          defaultIcon={<IconImagePlus />}
+          successIcon={<IconCheckSquare />}
+          status={status}
+          onClick={handleMint}
+        />
       </div>
     </div>
   );

@@ -29,7 +29,8 @@ export interface IApprove {
   approved?: boolean | undefined;
   spender?: `0x${string}` | undefined;
   value?: string | undefined;
-  steps?: boolean;
+  steps?: boolean | undefined;
+  dark?: boolean | undefined;
   handle: ({
     data,
     status,
@@ -70,7 +71,8 @@ export interface ISpender {
 
 export interface IMint {
   address: IAddress;
-  steps?: boolean;
+  steps?: boolean | undefined;
+  dark?: boolean | undefined;
   handle: ({
     data,
     hash,
@@ -91,7 +93,8 @@ export interface EthAddressInputProps {
 export interface ICreate {
   standart: 'ERC20' | 'ERC721';
   toqen: `0x${string}` | undefined;
-  steps?: boolean;
+  steps?: boolean | undefined;
+  dark?: boolean | undefined;
   handle: ({
     data,
     hash,

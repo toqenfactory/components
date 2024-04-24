@@ -213,125 +213,116 @@ const MintERC20 = ({ address, handle }: IMint) => {
     [ethAmount, tokenPrice, totalSupply, maxSupply]
   );
 
-  if (!address)
-    return (
-      <div className="flex items-center justify-center text-xl font-extrabold text-slate-700 dark:text-slate-500">
-        Token Address Not Found
-      </div>
-    );
-
   return (
-    <div className="min-w-96">
-      <div className="w-full">
-        <div className="relative flex flex-col items-center justify-between gap-2 rounded-xl p-1">
-          <div className="h-32 w-full rounded-xl border border-slate-50 bg-slate-50 px-4 py-2 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-800 hover:dark:border-slate-700">
-            <label htmlFor="you-pay" className="text-xs text-slate-500">
-              <div className="flex w-full items-center justify-between">
-                <div>You Pay</div>
+    <div className="w-full">
+      <div className="relative flex flex-col items-center justify-between gap-2 rounded-xl p-1">
+        <div className="h-32 w-full rounded-xl border border-slate-50 bg-slate-50 px-4 py-2 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-800 hover:dark:border-slate-700">
+          <label htmlFor="you-pay" className="text-xs text-slate-500">
+            <div className="flex w-full items-center justify-between">
+              <div>You Pay</div>
+            </div>
+          </label>
+          <div className="relative">
+            <input
+              type="text"
+              id="you-pay"
+              value={ethAmount ?? ''}
+              onChange={handleEth}
+              className="block w-full rounded-lg border-0 bg-slate-50 p-4 pl-0 pr-20 text-3xl font-extrabold text-slate-600 placeholder:text-slate-300 focus:outline-0 focus:ring-0 dark:border-slate-100 dark:bg-slate-800 dark:text-slate-50 dark:placeholder-slate-400"
+              placeholder="0"
+              required
+            />
+            <div className="shadow-xs absolute inset-y-0 right-0 top-4 h-9 rounded-lg bg-slate-100 px-4 py-2 text-sm font-extrabold text-slate-600 dark:bg-slate-900 dark:text-slate-50">
+              {balance?.symbol}
+            </div>
+            <div className="text-right text-xs text-slate-500">
+              <span className="mr-2 text-slate-300 dark:text-slate-600">
+                Balance:
+              </span>
+              <span>{truncateToDecimals(balance?.value)}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform">
+          {soldOut ? (
+            <span className="h-10 w-10 rounded-xl border-2 border-white bg-slate-100 px-2 py-1 font-extrabold text-slate-500 dark:border-slate-700 dark:bg-slate-800">
+              Sold Out
+            </span>
+          ) : (
+            <IconArrowDown
+              className={`${
+                (status === 'wallet' || status === 'pending') &&
+                `animate-bounce`
+              } h-10 w-10 rounded-xl border-2 border-white bg-slate-100 px-2 py-1 font-extrabold text-slate-500 dark:border-slate-700 dark:bg-slate-800`}
+            />
+          )}
+        </div>
+
+        <div className="h-32 w-full rounded-xl border border-slate-50 bg-slate-50 px-4 py-2 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-800 hover:dark:border-slate-700">
+          <label htmlFor="you-receive" className="text-xs text-slate-500">
+            <div className="flex w-full items-center justify-between">
+              <div>You Receive</div>
+              <div className="h-4 w-4 text-right text-slate-300 hover:text-slate-400 dark:text-slate-600 hover:dark:text-slate-700">
+                <a
+                  href={`https://etherscan.io/address/${address}`}
+                  target="_blank"
+                  title={`Token ${symbol} Info [ ${address} ]`}
+                >
+                  <IconInfo />
+                </a>
               </div>
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                id="you-pay"
-                value={ethAmount ?? ''}
-                onChange={handleEth}
-                className="block w-full rounded-lg border-0 bg-slate-50 p-4 pl-0 pr-20 text-3xl font-extrabold text-slate-600 placeholder:text-slate-300 focus:outline-0 focus:ring-0 dark:border-slate-100 dark:bg-slate-800 dark:text-slate-50 dark:placeholder-slate-400"
-                placeholder="0"
-                required
-              />
-              <div className="shadow-xs absolute inset-y-0 right-0 top-4 h-9 rounded-lg bg-slate-100 px-4 py-2 text-sm font-extrabold text-slate-600 dark:bg-slate-900 dark:text-slate-50">
-                {balance?.symbol}
+            </div>
+          </label>
+          <div className="relative">
+            <input
+              type="text"
+              id="you-receive"
+              value={amount ?? ''}
+              onChange={handleAmount}
+              className="block w-full rounded-lg border-0 bg-slate-50 p-4 pl-0 pr-20 text-3xl font-extrabold text-slate-600 placeholder:text-slate-300 focus:outline-0 focus:ring-0 dark:border-slate-100 dark:bg-slate-800 dark:text-slate-50 dark:placeholder-slate-400"
+              placeholder="0"
+              required
+            />
+            <div className="shadow-xs absolute inset-y-0 right-0 top-4 h-9 rounded-lg bg-slate-100 px-4 py-2 text-sm font-extrabold text-slate-600 dark:bg-slate-900 dark:text-slate-50">
+              {symbol}
+            </div>
+            <div className="flex w-full items-center justify-between">
+              <div className="relative flex items-center text-xs text-slate-500">
+                <span className="mr-2 text-slate-300 dark:text-slate-600">
+                  Receiver:
+                </span>
+                <EthAddressInput
+                  initialAddress={receiver}
+                  defaultText={
+                    accountAddress === receiver
+                      ? `You will receive tokens`
+                      : undefined
+                  }
+                  handler={addr => setReceiver(addr)}
+                />
               </div>
               <div className="text-right text-xs text-slate-500">
                 <span className="mr-2 text-slate-300 dark:text-slate-600">
                   Balance:
                 </span>
-                <span>{truncateToDecimals(balance?.value)}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform">
-            {soldOut ? (
-              <span className="h-10 w-10 rounded-xl border-2 border-white bg-slate-100 px-2 py-1 font-extrabold text-slate-500 dark:border-slate-700 dark:bg-slate-800">
-                Sold Out
-              </span>
-            ) : (
-              <IconArrowDown
-                className={`${
-                  (status === 'wallet' || status === 'pending') &&
-                  `animate-bounce`
-                } h-10 w-10 rounded-xl border-2 border-white bg-slate-100 px-2 py-1 font-extrabold text-slate-500 dark:border-slate-700 dark:bg-slate-800`}
-              />
-            )}
-          </div>
-
-          <div className="h-32 w-full rounded-xl border border-slate-50 bg-slate-50 px-4 py-2 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-800 hover:dark:border-slate-700">
-            <label htmlFor="you-receive" className="text-xs text-slate-500">
-              <div className="flex w-full items-center justify-between">
-                <div>You Receive</div>
-                <div className="h-4 w-4 text-right text-slate-300 hover:text-slate-400 dark:text-slate-600 hover:dark:text-slate-700">
-                  <a
-                    href={`https://etherscan.io/address/${address}`}
-                    target="_blank"
-                    title={`Token ${symbol} Info [ ${address} ]`}
-                  >
-                    <IconInfo />
-                  </a>
-                </div>
-              </div>
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                id="you-receive"
-                value={amount ?? ''}
-                onChange={handleAmount}
-                className="block w-full rounded-lg border-0 bg-slate-50 p-4 pl-0 pr-20 text-3xl font-extrabold text-slate-600 placeholder:text-slate-300 focus:outline-0 focus:ring-0 dark:border-slate-100 dark:bg-slate-800 dark:text-slate-50 dark:placeholder-slate-400"
-                placeholder="0"
-                required
-              />
-              <div className="shadow-xs absolute inset-y-0 right-0 top-4 h-9 rounded-lg bg-slate-100 px-4 py-2 text-sm font-extrabold text-slate-600 dark:bg-slate-900 dark:text-slate-50">
-                {symbol}
-              </div>
-              <div className="flex w-full items-center justify-between">
-                <div className="relative flex items-center text-xs text-slate-500">
-                  <span className="mr-2 text-slate-300 dark:text-slate-600">
-                    Receiver:
-                  </span>
-                  <EthAddressInput
-                    initialAddress={receiver}
-                    defaultText={
-                      accountAddress === receiver
-                        ? `You will receive tokens`
-                        : undefined
-                    }
-                    handler={addr => setReceiver(addr)}
-                  />
-                </div>
-                <div className="text-right text-xs text-slate-500">
-                  <span className="mr-2 text-slate-300 dark:text-slate-600">
-                    Balance:
-                  </span>
-                  <span>{truncateToDecimals(balanceOf)}</span>
-                </div>
+                <span>{truncateToDecimals(balanceOf)}</span>
               </div>
             </div>
           </div>
         </div>
-        {!soldOut && (
-          <div className="mt-2">
-            <ActionButton
-              defaultText={`Swap`}
-              successText={`Done`}
-              defaultIcon={<IconRepeat />}
-              status={status}
-              onClick={() => handleMint()}
-            />
-          </div>
-        )}
       </div>
+      {!soldOut && (
+        <div className="mt-2">
+          <ActionButton
+            defaultText={`Swap`}
+            successText={`Done`}
+            defaultIcon={<IconRepeat />}
+            status={status}
+            onClick={() => handleMint()}
+          />
+        </div>
+      )}
     </div>
   );
 };
