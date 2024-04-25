@@ -174,6 +174,7 @@ const Create = ({
               <div className="mr-1 flex-1">
                 <input
                   type="text"
+                  spellCheck={false}
                   className="w-full rounded-md bg-transparent px-1 focus:shadow-sm focus:outline-0 focus:ring-0"
                   value={name ?? ''}
                   onChange={e => setName(e.currentTarget.value)}
@@ -182,7 +183,7 @@ const Create = ({
               <div className="flex-none">
                 <div
                   title="AI 😂 Generator"
-                  className="w-6 rounded-md bg-slate-300 p-1 text-slate-50 hover:scale-110 hover:cursor-pointer hover:bg-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-900"
+                  className="w-6 p-1 text-slate-400 hover:scale-110 hover:cursor-pointer dark:text-slate-400"
                   onClick={handleGenerate}
                 >
                   <IconArrowsRandom />
@@ -191,6 +192,7 @@ const Create = ({
               <div className="flex-none">
                 <input
                   type="text"
+                  spellCheck={false}
                   className="w-16 rounded-md bg-transparent px-1 text-right focus:shadow-sm focus:outline-0 focus:ring-0"
                   value={symbol ?? ''}
                   onChange={e => setSymbol(e.currentTarget.value)}
@@ -247,6 +249,7 @@ const Create = ({
                       <div className="flex flex-1 items-center justify-end">
                         <input
                           type="text"
+                          spellCheck={false}
                           className="w-full rounded-md bg-transparent p-1 text-right focus:shadow-sm focus:outline-0 focus:ring-0"
                           value={maxSupply ?? ''}
                           onChange={e => setMaxSupply(e.currentTarget.value)}
@@ -272,6 +275,7 @@ const Create = ({
                       <div className="flex flex-1 items-center justify-end">
                         <input
                           type="text"
+                          spellCheck={false}
                           className="w-full rounded-md bg-transparent p-1 text-right focus:shadow-sm focus:outline-0 focus:ring-0"
                           value={tokenPrice ?? ''}
                           onChange={e => setTokenPrice(e.currentTarget.value)}
@@ -294,6 +298,7 @@ const Create = ({
                         <div className="flex flex-1 items-center justify-center">
                           <input
                             type="text"
+                            spellCheck={false}
                             className="w-full rounded bg-transparent p-1 focus:shadow-sm focus:outline-0 focus:ring-0"
                             value={baseURI ?? ''}
                             onChange={e => setBaseURI(e.currentTarget.value)}

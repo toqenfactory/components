@@ -231,6 +231,7 @@ const MintERC20 = ({ address, handle }: IMint) => {
               className="block w-full rounded-lg border-0 bg-slate-50 p-4 pl-0 pr-20 text-3xl font-extrabold text-slate-600 placeholder:text-slate-300 focus:outline-0 focus:ring-0 dark:border-slate-100 dark:bg-slate-800 dark:text-slate-50 dark:placeholder-slate-400"
               placeholder="0"
               required
+              spellCheck={false}
             />
             <div className="shadow-xs absolute inset-y-0 right-0 top-4 h-9 rounded-lg bg-slate-100 px-4 py-2 text-sm font-extrabold text-slate-600 dark:bg-slate-900 dark:text-slate-50">
               {balance?.symbol}
@@ -283,6 +284,7 @@ const MintERC20 = ({ address, handle }: IMint) => {
               className="block w-full rounded-lg border-0 bg-slate-50 p-4 pl-0 pr-20 text-3xl font-extrabold text-slate-600 placeholder:text-slate-300 focus:outline-0 focus:ring-0 dark:border-slate-100 dark:bg-slate-800 dark:text-slate-50 dark:placeholder-slate-400"
               placeholder="0"
               required
+              spellCheck={false}
             />
             <div className="shadow-xs absolute inset-y-0 right-0 top-4 h-9 rounded-lg bg-slate-100 px-4 py-2 text-sm font-extrabold text-slate-600 dark:bg-slate-900 dark:text-slate-50">
               {symbol}

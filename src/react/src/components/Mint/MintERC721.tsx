@@ -352,6 +352,7 @@ const MintERC721 = ({ address, steps = true, handle }: IMint) => {
                       value={`${nftCount ?? 0} NFT`}
                       readOnly
                       required
+                      spellCheck={false}
                     />
                     <button
                       type="button"

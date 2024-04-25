@@ -17,13 +17,13 @@
 ### Mint ERC20 Token
 
 ```jsx
-<Mint standart="ERC20" address="ERC20 Address" dark />
+<Mint standart="ERC20" address="ERC20 Address" dark={false} />
 ```
 
 ### Mint ERC721 Token
 
 ```jsx
-<Mint standart="ERC721" address="ERC721 Address" steps dark />
+<Mint standart="ERC721" address="ERC721 Address" steps={false} dark />
 ```
 
 ### Approve ERC20 Token
