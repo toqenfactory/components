@@ -18,6 +18,15 @@ export type IMetadata =
       description: string;
       image: string;
       external_url: string;
+      tokens: {
+        chainId: number;
+        address: `0x${string}`;
+        symbol: string;
+        name: string;
+        decimals: number;
+        logoURI: string;
+        tags: string[];
+      }[];
     }
   | undefined;
 
