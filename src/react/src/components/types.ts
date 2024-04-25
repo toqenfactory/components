@@ -17,12 +17,14 @@ export type IMetadata =
       name: string;
       description: string;
       image: string;
-      external_url: string;
-      attributes: {
+      external_url?: string;
+      background_color?: string;
+      banner_image?: string;
+      attributes?: {
         trait_type: string;
         value: `0x${string}`;
       }[];
-      tokens: {
+      tokens?: {
         chainId: number;
         address: `0x${string}`;
         symbol: string;
@@ -31,7 +33,7 @@ export type IMetadata =
         logoURI: string;
         tags: string[];
       }[];
-      timestamp: string;
+      timestamp?: string;
     }
   | undefined;
 
