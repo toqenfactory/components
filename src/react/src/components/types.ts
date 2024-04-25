@@ -18,6 +18,10 @@ export type IMetadata =
       description: string;
       image: string;
       external_url: string;
+      attributes: {
+        trait_type: string;
+        value: `0x${string}`;
+      }[];
       tokens: {
         chainId: number;
         address: `0x${string}`;
@@ -27,6 +31,7 @@ export type IMetadata =
         logoURI: string;
         tags: string[];
       }[];
+      timestamp: string;
     }
   | undefined;
 
