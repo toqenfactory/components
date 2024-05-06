@@ -19,22 +19,27 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           scope: "@toqen"
 
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
+        with:
+          version: 8
+
       - name: Install main packages
-        run: npm install
+        run: pnpm install
 
       - name: Install component packages
-        run: npm install
+        run: pnpm install
         working-directory: ./src/react
 
       - name: Copy README to components directory
         run: cp README.md ./src/react/
 
       - name: Build package
-        run: npm run build
+        run: pnpm run build
         working-directory: ./src/react
 
       - name: Publish to npm
-        run: npm publish --access public --no-git-checks
+        run: pnpm publish --access public --no-git-checks
         working-directory: ./src/react
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
