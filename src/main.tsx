@@ -6,6 +6,7 @@ import "./index.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 
+import { defineChain } from "viem";
 import { createConfig, http } from "wagmi";
 
 const queryClient = new QueryClient();
@@ -23,9 +24,27 @@ const localhost = {
   },
 };
 
+const bitTorrent = defineChain({
+  id: 1029,
+  name: "BitTorrent Chain Donau",
+  nativeCurrency: { name: "BitTorrent", symbol: "BTT", decimals: 18 },
+  rpcUrls: {
+    default: { http: ["https://pre-rpc.bittorrentchain.io/"] },
+  },
+  blockExplorers: {
+    default: { name: "BitTorrent", url: "https://testscan.bt.io" },
+  },
+  contracts: {
+    multicall3: {
+      address: "0x5608020135e7Eb9a1ef6683aD4988200eA5Cfcbf",
+    },
+  },
+});
+
 export const config = createConfig({
-  chains: [localhost],
+  chains: [bitTorrent, localhost],
   transports: {
+    [bitTorrent.id]: http(),
     [localhost.id]: http(),
   },
 });
