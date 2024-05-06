@@ -1,9 +1,21 @@
 {
   "name": "@toqen/react",
   "private": false,
-  "version": "0.0.22",
+  "version": "0.0.23",
   "description": "Create/Mint/Approve ERC20/ERC721 Tokens",
-  "keywords": ["react", "ui", "components", "library", "ERC20", "ERC721", "token", "NFT", "mint", "approve"],
+  "keywords": [
+    "toqen",
+    "react",
+    "ui",
+    "components",
+    "library",
+    "ERC20",
+    "ERC721",
+    "token",
+    "NFT",
+    "mint",
+    "approve"
+  ],
   "author": "Peace Duck",
   "homepage": "https://github.com/toqenfactory",
   "type": "module",
