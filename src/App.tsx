@@ -11,11 +11,13 @@ function App() {
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
 
+  const [dark, setDark] = useState(false);
+
   const [component, setComponent] = useState(<></>);
   const [title, setTitle] = useState("");
 
   const [toqen, setToqen] = useState<`0x${string}`>(
-    "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+    "0x3AE2475877243dD4331c51BABa39832450526597"
   );
 
   const [erc20, setErc20] = useState<`0x${string}` | undefined>();
@@ -109,6 +111,7 @@ function App() {
                 <button
                   className="btn btn-ghost border-b-cyan-600"
                   onClick={() => {
+                    setDark(false);
                     setComponent(<Connect />);
                     setTitle("Connect");
                     const modal: any = document.getElementById("modal");
@@ -132,6 +135,7 @@ function App() {
                 <button
                   className="btn btn-ghost border-b-cyan-600"
                   onClick={() => {
+                    setDark(true);
                     setComponent(
                       <Create
                         standart="ERC20"
@@ -166,6 +170,7 @@ function App() {
                 <button
                   className="btn btn-ghost border-b-cyan-600"
                   onClick={() => {
+                    setDark(true);
                     setComponent(
                       <Create
                         standart="ERC721"
@@ -193,13 +198,14 @@ function App() {
               <h2 className="text-2xl">Mint ERC20 Token</h2>
               <div>
                 <code className="text-xs bg-slate-600/35 rounded-xl px-4 py-2">
-                  {`<Mint standart="ERC20" address="${erc20 ?? `ERC20 Address`}" dark />`}
+                  {`<Mint standart="ERC20" address="${erc20 ?? `ERC20 Address`}" />`}
                 </code>
               </div>
               <div className="flex gap-4">
                 <button
                   className="btn btn-ghost border-b-cyan-600"
                   onClick={() => {
+                    setDark(true);
                     setComponent(
                       <Mint
                         address={erc20}
@@ -232,6 +238,7 @@ function App() {
                 <button
                   className="btn btn-ghost border-b-cyan-600"
                   onClick={() => {
+                    setDark(true);
                     setComponent(
                       <Mint
                         address={erc721}
@@ -253,6 +260,7 @@ function App() {
                 <button
                   className="btn btn-ghost border-b-cyan-600"
                   onClick={() => {
+                    setDark(true);
                     setComponent(
                       <Mint
                         address={erc721}
@@ -279,20 +287,20 @@ function App() {
               <h2 className="text-2xl">Approve ERC20 Token</h2>
               <div>
                 <code className="text-xs bg-slate-600/35 rounded-xl px-4 py-2">
-                  {`<Approve address="${erc20 ?? `ERC20 Address`}" spender="Address" value="10" steps dark />`}
+                  {`<Approve address="${erc20 ?? `ERC20 Address`}" spender="Address" value="10" steps />`}
                 </code>
               </div>
               <div className="flex gap-4">
                 <button
                   className="btn btn-ghost border-b-cyan-600"
                   onClick={() => {
+                    setDark(false);
                     setComponent(
                       <Approve
                         address={erc20}
                         spender={spender}
                         value={"10"}
                         steps
-                        dark
                         handle={({ data, status }) => {
                           console.log("data", data);
                           console.log("status", status);
@@ -321,6 +329,7 @@ function App() {
                 <button
                   className="btn btn-ghost border-b-cyan-600"
                   onClick={() => {
+                    setDark(true);
                     setComponent(
                       <Approve
                         address={erc721}
@@ -344,6 +353,7 @@ function App() {
                 <button
                   className="btn btn-ghost border-b-cyan-600"
                   onClick={() => {
+                    setDark(true);
                     setComponent(
                       <Approve
                         address={erc721}
@@ -379,6 +389,7 @@ function App() {
                 <button
                   className="btn btn-ghost border-b-cyan-600"
                   onClick={() => {
+                    setDark(true);
                     setComponent(
                       <Approve
                         address={erc721}
@@ -414,6 +425,7 @@ function App() {
                 <button
                   className="btn btn-ghost border-b-cyan-600"
                   onClick={() => {
+                    setDark(true);
                     setComponent(
                       <Approve
                         address={erc721}
@@ -440,7 +452,9 @@ function App() {
         </ul>
       </div>
       <dialog id="modal" className="modal w-full">
-        <div className="modal-box m-0 p-0">
+        <div
+          className={`${dark ? `bg-slate-800 text-slate-50` : `bg-slate-50 text-slate-800`} modal-box m-0 p-0`}
+        >
           <div className="relative">
             <form method="dialog">
               <button className="btn btn-sm btn-circle btn-ghost absolute right-4 top-0">

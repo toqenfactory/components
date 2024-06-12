@@ -13,7 +13,7 @@ const Connect = ({ dark }: { dark?: boolean | undefined }) => {
           <div>{address}</div>
           <div>
             <button
-              className="mt-2 rounded-xl bg-neutral-500 px-5 py-2 font-semibold text-white shadow-md hover:bg-neutral-700 focus:outline-none focus:ring focus:ring-neutral-400 focus:ring-opacity-75"
+              className="mt-2 rounded-xl bg-slate-400 px-5 py-2 font-semibold text-white shadow-md hover:bg-slate-500 focus:outline-none focus:ring focus:ring-neutral-400 focus:ring-opacity-75 dark:bg-slate-700 dark:hover:bg-slate-600"
               onClick={() => disconnect()}
             >
               Disconnect

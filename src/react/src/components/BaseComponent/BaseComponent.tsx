@@ -7,7 +7,7 @@ const BaseComponent = ({
   dark?: boolean | undefined;
   children: ReactNode;
 }) => {
-  return <div data-mode={dark ? `dark` : ``}>{children}</div>;
+  return <div className={`${dark ? 'dark' : ''}`}>{children}</div>;
 };
 
 export default BaseComponent;

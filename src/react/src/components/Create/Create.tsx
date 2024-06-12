@@ -158,7 +158,9 @@ const Create = ({
 
   return (
     <BaseComponent dark={dark}>
-      <div className="dark flex w-full flex-col gap-2 text-slate-950 dark:text-slate-50">
+      <div
+        className={`flex w-full flex-col gap-2 text-slate-950 dark:text-slate-50`}
+      >
         {steps && (
           <div>
             <Steps status={status} />
@@ -175,7 +177,7 @@ const Create = ({
                 <input
                   type="text"
                   spellCheck={false}
-                  className="w-full rounded-md bg-transparent px-1 focus:shadow-sm focus:outline-0 focus:ring-0"
+                  className="w-full rounded-md bg-transparent px-1 text-black focus:shadow-sm focus:outline-0 focus:ring-0 dark:text-white"
                   value={name ?? ''}
                   onChange={e => setName(e.currentTarget.value)}
                 />

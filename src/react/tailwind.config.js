@@ -1,5 +1,5 @@
 export default {
-  darkMode: ['selector', '[data-mode="dark"]'],
+  darkMode: 'class',
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   theme: {
     extend: {},

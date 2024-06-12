@@ -216,7 +216,7 @@ const MintERC20 = ({ address, handle }: IMint) => {
   return (
     <div className="w-full">
       <div className="relative flex flex-col items-center justify-between gap-2 rounded-xl p-1">
-        <div className="h-32 w-full rounded-xl border border-slate-50 bg-slate-50 px-4 py-2 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-800 hover:dark:border-slate-700">
+        <div className="h-32 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 hover:dark:border-slate-600">
           <label htmlFor="you-pay" className="text-xs text-slate-500">
             <div className="flex w-full items-center justify-between">
               <div>You Pay</div>
@@ -260,7 +260,7 @@ const MintERC20 = ({ address, handle }: IMint) => {
           )}
         </div>
 
-        <div className="h-32 w-full rounded-xl border border-slate-50 bg-slate-50 px-4 py-2 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-800 hover:dark:border-slate-700">
+        <div className="h-32 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 hover:dark:border-slate-600">
           <label htmlFor="you-receive" className="text-xs text-slate-500">
             <div className="flex w-full items-center justify-between">
               <div>You Receive</div>
