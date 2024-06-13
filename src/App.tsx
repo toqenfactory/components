@@ -1,15 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
 
 import logo from "./logo.svg";
 
 import { Approve, Connect, Create, Mint } from "./react/src/components";
+import TokenAlert from "./TokenAlert";
 // import { Approve, Connect, Create, Mint } from "@toqen/react";
 
 function App() {
   const { address } = useAccount();
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
+  const [chain, setChain] = useState(chainId);
 
   const [dark, setDark] = useState(false);
 
@@ -20,6 +22,10 @@ function App() {
     "0x3AE2475877243dD4331c51BABa39832450526597"
   );
 
+  useEffect(() => {
+    switchChain({ chainId: chain });
+  }, [chain, switchChain]);
+
   const [erc20, setErc20] = useState<`0x${string}` | undefined>();
   const [erc721, setErc721] = useState<`0x${string}` | undefined>();
 
@@ -27,6 +33,7 @@ function App() {
 
   return (
     <div>
+      <TokenAlert />
       <div className="flex flex-col justify-center items-center h-full w-full m-0 p-0 text-white dark:text-white">
         <img src={logo} className="w-60 h-60 animate-pulse"></img>
         <h1 className="text-4xl m-6 font-extrabold animate-bounce">
@@ -80,8 +87,8 @@ function App() {
           <input
             type="text"
             className="rounded-xl border-0 bg-transparent w-24 p-4 text-center"
-            value={chainId}
-            onChange={(e) => switchChain({ chainId: Number(e.target.value) })}
+            value={chain}
+            onChange={(e) => setChain(Number(e.target.value))}
           />
           {"Toqen: "}
           <input
