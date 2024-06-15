@@ -41,8 +41,8 @@ const TokenAlert: React.FC = () => {
         <div className="my-4">
           <div className="flex gap-2 items-center justify-between">
             <strong>Token: </strong>
-            <span className="text-xs text-gray-600 flex gap-2">
-              {token.tokenAddress.slice(0, 20)}...{" "}
+            <span className="text-xs text-gray-600 flex gap-2 font-mono">
+              {token.tokenAddress.slice(0, 12)}...{" "}
               <CopyToClipboard text={token.tokenAddress}>
                 <FiCopy className="ml-2 cursor-pointer text-blue-500 hover:text-blue-700 active:text-blue-900" />
               </CopyToClipboard>
@@ -50,8 +50,8 @@ const TokenAlert: React.FC = () => {
           </div>
           <div className="flex gap-2 items-center justify-between">
             <strong>Creator: </strong>
-            <span className="text-xs text-gray-600 flex gap-2">
-              {token.creator.slice(0, 20)}...{" "}
+            <span className="text-xs text-gray-600 flex gap-2 font-mono">
+              {token.creator.slice(0, 12)}...{" "}
               <CopyToClipboard text={token.creator}>
                 <FiCopy className="ml-2 cursor-pointer text-blue-500 hover:text-blue-700 active:text-blue-900" />
               </CopyToClipboard>

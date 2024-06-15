@@ -10,24 +10,25 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 
 import { defineChain } from "viem";
+import { bitTorrent } from "viem/chains";
 import { createConfig, http } from "wagmi";
 
 const queryClient = new QueryClient();
 
-const localhost = {
-  id: 31_337,
-  name: "Localhost",
-  nativeCurrency: {
-    decimals: 18,
-    name: "Ether",
-    symbol: "ETH",
-  },
-  rpcUrls: {
-    default: { http: ["http://127.0.0.1:8545"] },
-  },
-};
+// const localhost = {
+//   id: 31_337,
+//   name: "Localhost",
+//   nativeCurrency: {
+//     decimals: 18,
+//     name: "Ether",
+//     symbol: "ETH",
+//   },
+//   rpcUrls: {
+//     default: { http: ["http://127.0.0.1:8545"] },
+//   },
+// };
 
-const bitTorrent = defineChain({
+const bitTorrentDonau = defineChain({
   id: 1029,
   name: "BitTorrent Chain Donau",
   nativeCurrency: { name: "BitTorrent", symbol: "BTT", decimals: 18 },
@@ -45,10 +46,10 @@ const bitTorrent = defineChain({
 });
 
 export const config = createConfig({
-  chains: [bitTorrent, localhost],
+  chains: [bitTorrentDonau, bitTorrent],
   transports: {
+    [bitTorrentDonau.id]: http(),
     [bitTorrent.id]: http(),
-    [localhost.id]: http(),
   },
 });
 

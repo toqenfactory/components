@@ -192,10 +192,12 @@ const MintERC721 = ({ address, steps = true, handle }: IMint) => {
   }, [address, functionName, args, ethAmount]);
 
   const BtnText = () => (
-    <div className="relative">
-      <div className={ethAmount && `-translate-y-2 transform`}>Mint</div>
+    <div className="relative line-clamp-2 flex flex-col gap-0">
+      <div className={`transform ${ethAmount ? '-translate-y-2' : ''}`}>
+        Mint
+      </div>
       {ethAmount && (
-        <div className="absolute inset-0 top-5 text-xs opacity-50">
+        <div className="mt-[-12px] text-xs opacity-50">
           <span className="font-mono">{ethAmount}</span> {balance?.symbol}
         </div>
       )}

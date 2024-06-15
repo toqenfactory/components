@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react";
-import { useAccount, useChainId, useSwitchChain } from "wagmi";
+import { useAccount, useChains, useSwitchChain } from "wagmi";
 
 import logo from "./logo.svg";
 
 import { Approve, Connect, Create, Mint } from "./react/src/components";
 import TokenAlert from "./TokenAlert";
-// import { Approve, Connect, Create, Mint } from "@toqen/react";
+
+const tokenAddr = {
+  199: "0xCb861443488cC55EBf14830824ff82F7EA75dbB3",
+  1029: "0x3AE2475877243dD4331c51BABa39832450526597",
+} as any;
 
 function App() {
-  const { address } = useAccount();
-  const chainId = useChainId();
+  const { address, chainId } = useAccount();
+  const chains = useChains();
   const { switchChain } = useSwitchChain();
   const [chain, setChain] = useState(chainId);
 
@@ -18,12 +22,20 @@ function App() {
   const [component, setComponent] = useState(<></>);
   const [title, setTitle] = useState("");
 
-  const [toqen, setToqen] = useState<`0x${string}`>(
-    "0x3AE2475877243dD4331c51BABa39832450526597"
-  );
+  const [toqen, setToqen] = useState<`0x${string}`>();
+
+  const handleChainChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setChain(Number(event.target.value));
+  };
 
   useEffect(() => {
-    switchChain({ chainId: chain });
+    if (!chainId) return;
+    setChain(chainId);
+    setToqen(tokenAddr[chainId]);
+  }, [chainId]);
+
+  useEffect(() => {
+    switchChain({ chainId: chain ?? 0 });
   }, [chain, switchChain]);
 
   const [erc20, setErc20] = useState<`0x${string}` | undefined>();
@@ -82,22 +94,43 @@ function App() {
             </svg>
           </a>
         </div>
-        <div>
+        <div className="m-0 p-8 text-white dark:text-white">
+          <div className="bg-gradient-to-r from-blue-900 to-sky-900 rounded-3xl text-white p-4">
+            npm i @toqen/react
+          </div>
+        </div>
+        <div className="flex gap-2 justify-center items-center">
           {"Chain ID: "}
-          <input
-            type="text"
-            className="rounded-xl border-0 bg-transparent w-24 p-4 text-center"
+          <select
+            id="chain-select"
             value={chain}
-            onChange={(e) => setChain(Number(e.target.value))}
-          />
+            onChange={handleChainChange}
+            className="rounded-xl border-0 bg-transparent px-2 text-center"
+          >
+            {chains.map((chain: any) => (
+              <option key={chain.id} value={chain.id}>
+                {chain.name}
+              </option>
+            ))}
+          </select>
           {"Toqen: "}
           <input
             type="text"
+            placeholder="The address of Toqen on network"
             className="rounded-xl border-0 bg-transparent w-96 p-4"
             value={toqen}
             onChange={(e) => setToqen(e.currentTarget.value as `0x${string}`)}
           />
         </div>
+      </div>
+      <div className="flex flex-col justify-center items-center h-full w-full m-0 p-8 text-white dark:text-white pl-20">
+        <div className="bg-slate-600/35 rounded-3xl text-white p-4">
+          {`import {Connect, Create, Mint, Approve} from "@toqen/react"`}
+        </div>
+        <small className=" opacity-15">
+          The component retrieves all chain settings from the parent wagmi
+          configuration.
+        </small>
       </div>
       <div className="flex flex-col justify-start items-start h-full w-full m-0 p-8 text-white dark:text-white pl-20">
         <ul className="my-4 list-decimal space-y-3 flex flex-col justify-start">
