@@ -7,7 +7,7 @@ import { Approve, Connect, Create, Mint } from "./react/src/components";
 import TokenAlert from "./TokenAlert";
 
 const tokenAddr = {
-  199: "0xCb861443488cC55EBf14830824ff82F7EA75dbB3",
+  199: "0xA03A3528aD6A799C5ACf61C95435A7270D8b036e",
   1029: "0x3AE2475877243dD4331c51BABa39832450526597",
 } as any;
 
