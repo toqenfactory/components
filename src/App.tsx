@@ -73,7 +73,7 @@ function App() {
             </svg>
           </a>
           <a
-            href="https://testnet.bttcscan.com/address/0x3AE2475877243dD4331c51BABa39832450526597#code"
+            href="https://bttcscan.com/address/0xa03a3528ad6a799c5acf61c95435a7270d8b036e#code"
             target="_blank"
           >
             <svg
