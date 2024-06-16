@@ -138,22 +138,22 @@ const Approve = ({
 
   useEffect(() => {
     if (offChain === 'error' || onChain === 'error') {
-      handle({ data: undefined, status: 'error' });
+      if (handle) handle({ data: undefined, status: 'error' });
       setStatus('error');
     }
     if (onChain === 'pending') {
       if (offChain === 'idle') {
-        handle({ data: undefined, status: 'idle' });
+        if (handle) handle({ data: undefined, status: 'idle' });
       } else if (offChain === 'pending') {
-        handle({ data: undefined, status: 'wallet' });
+        if (handle) handle({ data: undefined, status: 'wallet' });
         setStatus('wallet');
       } else if (offChain === 'success') {
-        handle({ data: undefined, status: 'pending' });
+        if (handle) handle({ data: undefined, status: 'pending' });
         setStatus('pending');
       }
     }
     if (onChain === 'success') {
-      handle({ data: isApprove, status: 'success' });
+      if (handle) handle({ data: isApprove, status: 'success' });
       setStatus('success');
       refetch();
     }

@@ -106,23 +106,23 @@ const MintERC20 = ({ address, handle }: IMint) => {
     const data = undefined;
 
     if (offChain === 'error' || onChain === 'error') {
-      handle({ data, hash, status: 'error' });
+      if (handle) handle({ data, hash, status: 'error' });
       setStatus('error');
     }
     if (onChain === 'pending') {
       if (offChain === 'idle') {
-        handle({ data, hash, status: 'idle' });
+        if (handle) handle({ data, hash, status: 'idle' });
         setStatus('idle');
       } else if (offChain === 'pending') {
-        handle({ data, hash, status: 'wallet' });
+        if (handle) handle({ data, hash, status: 'wallet' });
         setStatus('wallet');
       } else if (offChain === 'success') {
-        handle({ data, hash, status: 'pending' });
+        if (handle) handle({ data, hash, status: 'pending' });
         setStatus('pending');
       }
     }
     if (onChain === 'success') {
-      handle({ data: amount ? [amount] : undefined, hash, status: 'success' });
+      if (handle) handle({ data: amount ? [amount] : undefined, hash, status: 'success' });
       setStatus('success');
       setAmount(undefined);
       setEthAmount(undefined);

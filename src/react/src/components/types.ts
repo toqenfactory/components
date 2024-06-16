@@ -47,7 +47,7 @@ export interface IApprove {
   value?: string | undefined;
   steps?: boolean | undefined;
   dark?: boolean | undefined;
-  handle: ({
+  handle?: ({
     data,
     status,
   }: {
@@ -89,7 +89,7 @@ export interface IMint {
   address: IAddress;
   steps?: boolean | undefined;
   dark?: boolean | undefined;
-  handle: ({
+  handle?: ({
     data,
     hash,
     status,
@@ -111,7 +111,7 @@ export interface ICreate {
   toqen: `0x${string}` | undefined;
   steps?: boolean | undefined;
   dark?: boolean | undefined;
-  handle: ({
+  handle?: ({
     data,
     hash,
     status,

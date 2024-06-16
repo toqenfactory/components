@@ -126,18 +126,18 @@ const MintERC721 = ({ address, steps = true, handle }: IMint) => {
     const data = undefined;
 
     if (offChain === 'error' || onChain === 'error') {
-      handle({ data, hash, status: 'error' });
+      if (handle) handle({ data, hash, status: 'error' });
       setStatus('error');
     }
     if (onChain === 'pending') {
       if (offChain === 'idle') {
-        handle({ data, hash, status: 'idle' });
+        if (handle) handle({ data, hash, status: 'idle' });
         setStatus('idle');
       } else if (offChain === 'pending') {
-        handle({ data, hash, status: 'wallet' });
+        if (handle) handle({ data, hash, status: 'wallet' });
         setStatus('wallet');
       } else if (offChain === 'success') {
-        handle({ data, hash, status: 'pending' });
+        if (handle) handle({ data, hash, status: 'pending' });
         setStatus('pending');
       }
     }
@@ -154,7 +154,7 @@ const MintERC721 = ({ address, steps = true, handle }: IMint) => {
     if (nftIds === undefined) return;
 
     if (nftIds.length === nftCount) {
-      handle({ data: nftIds, hash, status: 'success' });
+      if (handle) handle({ data: nftIds, hash, status: 'success' });
       setStatus('success');
     }
   }, [nftIds]);
