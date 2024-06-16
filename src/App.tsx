@@ -168,7 +168,7 @@ function App() {
               <h2 className="text-2xl">Create ERC20 Token</h2>
               <div>
                 <code className="text-xs bg-slate-600/35 rounded-xl px-4 py-2">
-                  {`<Create standart="ERC20" toqen="TOQEN Contract Address" dark />`}
+                  {`<Create standart="ERC20" toqen="${toqen}" />`}
                 </code>
               </div>
               <div className="flex gap-4">
@@ -203,7 +203,7 @@ function App() {
               <h2 className="text-2xl">Create ERC721 Token</h2>
               <div>
                 <code className="text-xs bg-slate-600/35 rounded-xl px-4 py-2">
-                  {`<Create standart="ERC721" toqen="TOQEN Contract Address" dark />`}
+                  {`<Create standart="ERC721" toqen="${toqen}" />`}
                 </code>
               </div>
               <div className="flex gap-4">
