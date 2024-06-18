@@ -3,7 +3,7 @@ import { useAccount, useChains, useSwitchChain } from "wagmi";
 
 import logo from "./logo.svg";
 
-import { Approve, Connect, Create, Mint } from "./react/src/components";
+import { Approve, Connect, Create, Manage, Mint } from "./react/src/components";
 import TokenAlert from "./TokenAlert";
 
 const tokenAddr = {
@@ -103,7 +103,7 @@ function App() {
           {"Chain ID: "}
           <select
             id="chain-select"
-            value={chain}
+            value={chain || ""}
             onChange={handleChainChange}
             className="rounded-xl border-0 bg-transparent px-2 text-center"
           >
@@ -118,7 +118,7 @@ function App() {
             type="text"
             placeholder="The address of Toqen on network"
             className="rounded-xl border-0 bg-transparent w-96 p-4"
-            value={toqen}
+            value={toqen || ""}
             onChange={(e) => setToqen(e.currentTarget.value as `0x${string}`)}
           />
         </div>
@@ -137,7 +137,7 @@ function App() {
           <li>
             <div className="flex flex-col gap-2">
               <h2 className="text-2xl">
-                Connect{" "}
+                Connect / Manage{" "}
                 <small className="text-xs">
                   (example, main connect in parent app)
                 </small>
@@ -146,6 +146,11 @@ function App() {
                 <code className="text-xs bg-slate-600/35 rounded-xl px-4 py-2">
                   {address ? `You: ${address}` : `<Connect />`}
                 </code>
+                <div className="my-2">
+                  <code className="text-xs bg-slate-600/35 rounded-xl px-4 py-2">
+                    {`<Manage />`}
+                  </code>
+                </div>
               </div>
               <div>
                 <button
@@ -159,6 +164,18 @@ function App() {
                   }}
                 >
                   Connect
+                </button>{" "}
+                <button
+                  className="btn btn-ghost border-b-cyan-600"
+                  onClick={() => {
+                    setDark(false);
+                    setComponent(<Manage />);
+                    setTitle("Manage");
+                    const modal: any = document.getElementById("modal");
+                    modal?.showModal();
+                  }}
+                >
+                  Manage
                 </button>
               </div>
             </div>
