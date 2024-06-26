@@ -4,7 +4,7 @@ import { Address, formatEther } from 'viem';
 import { useBalance, useReadContracts, useWriteContract } from 'wagmi';
 import BaseComponent from '../BaseComponent';
 
-const Manage = ({ address, dark }: { address?: string, dark?: boolean | undefined }) => {
+const Manage = ({ address, dark }: { address?: Address, dark?: boolean | undefined }) => {
   const [token, setToken] = useState<Address>(address);
   const [show, setShow] = useState(!!address);
 
