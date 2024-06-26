@@ -18,7 +18,7 @@ const Manage = ({ address, dark }: { address?: Address, dark?: boolean }) => {
     address: token,
   });
 
-  const { writeContract, status } = useWriteContract();
+  const { writeContract } = useWriteContract();
 
   const { data } = useReadContracts({
     contracts: [
