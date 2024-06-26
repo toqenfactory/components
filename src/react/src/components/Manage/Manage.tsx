@@ -4,9 +4,9 @@ import { Address, formatEther } from 'viem';
 import { useBalance, useReadContracts, useWriteContract } from 'wagmi';
 import BaseComponent from '../BaseComponent';
 
-const Connect = ({ dark }: { dark?: boolean | undefined }) => {
-  const [token, setToken] = useState<Address>();
-  const [show, setShow] = useState(false);
+const Manage = ({ address, dark }: { address?: string, dark?: boolean | undefined }) => {
+  const [token, setToken] = useState<Address>(address);
+  const [show, setShow] = useState(!!address);
 
   const balance = useBalance({
     address: token,
@@ -100,9 +100,6 @@ const Connect = ({ dark }: { dark?: boolean | undefined }) => {
   const [owner, maxSupply, totalSupply, tokenPrice, symbol, baseURI]: any =
     useMemo(() => (data ? data : []), [data]);
 
-  console.log('data', data);
-  console.log('status', status);
-
   const handleWithdraw = () => {
     if (!token) return;
 
@@ -184,4 +181,4 @@ const Connect = ({ dark }: { dark?: boolean | undefined }) => {
   );
 };
 
-export default Connect;
+export default Manage;

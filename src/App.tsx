@@ -148,7 +148,7 @@ function App() {
                 </code>
                 <div className="my-2">
                   <code className="text-xs bg-slate-600/35 rounded-xl px-4 py-2">
-                    {`<Manage />`}
+                    {`<Manage address="ERC20/ERC721 Address" />`}
                   </code>
                 </div>
               </div>
