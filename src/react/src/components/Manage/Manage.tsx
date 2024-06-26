@@ -1,12 +1,18 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { RiTokenSwapLine } from 'react-icons/ri';
 import { Address, formatEther } from 'viem';
 import { useBalance, useReadContracts, useWriteContract } from 'wagmi';
 import BaseComponent from '../BaseComponent';
 
-const Manage = ({ address, dark }: { address?: Address, dark?: boolean | undefined }) => {
-  const [token, setToken] = useState<Address>(address);
-  const [show, setShow] = useState(!!address);
+const Manage = ({ address, dark }: { address?: Address, dark?: boolean }) => {
+  const [token, setToken] = useState<Address>();
+  const [show, setShow] = useState<boolean>();
+
+  useEffect(() => {
+    if (!address) return;
+    setToken(address);
+    setShow(!!address);
+  }, [])
 
   const balance = useBalance({
     address: token,
