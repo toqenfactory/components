@@ -24,19 +24,11 @@ function App() {
 
   const [toqen, setToqen] = useState<`0x${string}`>();
 
-  const handleChainChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setChain(Number(event.target.value));
-  };
-
   useEffect(() => {
     if (!chainId) return;
     setChain(chainId);
     setToqen(tokenAddr[chainId]);
   }, [chainId]);
-
-  useEffect(() => {
-    switchChain({ chainId: chain ?? 0 });
-  }, [chain]);
 
   const [erc20, setErc20] = useState<`0x${string}` | undefined>();
   const [erc721, setErc721] = useState<`0x${string}` | undefined>();
@@ -104,7 +96,9 @@ function App() {
           <select
             id="chain-select"
             value={chain || ""}
-            onChange={handleChainChange}
+            onChange={(e) => {
+              switchChain({ chainId: parseInt(e.currentTarget.value) });
+            }}
             className="rounded-xl border-0 bg-transparent px-2 text-center"
           >
             {chains.map((chain: any) => (
