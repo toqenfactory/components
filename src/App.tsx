@@ -36,7 +36,7 @@ function App() {
 
   useEffect(() => {
     switchChain({ chainId: chain ?? 0 });
-  }, [chain, switchChain]);
+  }, [chain]);
 
   const [erc20, setErc20] = useState<`0x${string}` | undefined>();
   const [erc721, setErc721] = useState<`0x${string}` | undefined>();
@@ -125,7 +125,7 @@ function App() {
       </div>
       <div className="flex flex-col justify-center items-center h-full w-full m-0 p-8 text-white dark:text-white pl-20">
         <div className="bg-slate-600/35 rounded-3xl text-white p-4">
-          {`import {Connect, Create, Mint, Approve} from "@toqen/react"`}
+          {`import {Connect, Create, Mint, Approve, Manage} from "@toqen/react"`}
         </div>
         <small className=" opacity-15">
           The component retrieves all chain settings from the parent wagmi
