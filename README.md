@@ -50,6 +50,12 @@
 <Approve address="ERC721 Address" operator="Address" approved={false} dark />
 ```
 
+### Manage ERC20/ERC721 Token
+
+```jsx
+<Manage address="ERC20/ERC721 Address" />
+```
+
 ## Param `handle`
 
 ```
