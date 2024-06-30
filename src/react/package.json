@@ -1,7 +1,7 @@
 {
   "name": "@toqen/react",
   "private": false,
-  "version": "0.0.37",
+  "version": "0.0.38",
   "description": "Create/Mint/Approve/Manage ERC20/ERC721 Tokens",
   "keywords": [
     "toqen",

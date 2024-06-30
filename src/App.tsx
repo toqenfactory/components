@@ -12,7 +12,7 @@ const tokenAddr = {
 } as any;
 
 function App() {
-  const { address, chainId } = useAccount();
+  const { address, chainId, isConnected } = useAccount();
   const chains = useChains();
   const { switchChain } = useSwitchChain();
   const [chain, setChain] = useState(chainId);
@@ -97,6 +97,13 @@ function App() {
             id="chain-select"
             value={chain || ""}
             onChange={(e) => {
+              if (!isConnected) {
+                setDark(false);
+                setComponent(<Connect />);
+                setTitle("Connect");
+                const modal: any = document.getElementById("modal");
+                modal?.showModal();
+              }
               switchChain({ chainId: parseInt(e.currentTarget.value) });
             }}
             className="rounded-xl border-0 bg-transparent px-2 text-center"
