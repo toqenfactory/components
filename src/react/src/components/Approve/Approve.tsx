@@ -78,8 +78,6 @@ const Approve = ({
   const { status: onChain } = useWaitForTransactionReceipt({ hash });
   const { data, refetch } = useReadContracts({ contracts, query });
 
-  console.log('data', data);
-
   const getApproved = useMemo(() => {
     return data?.[0]?.result as `0x${string}` | undefined;
   }, [data]);

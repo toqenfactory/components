@@ -3,8 +3,9 @@ import { RiTokenSwapLine } from 'react-icons/ri';
 import { Address, formatEther } from 'viem';
 import { useBalance, useReadContracts, useWriteContract } from 'wagmi';
 import BaseComponent from '../BaseComponent';
+import { abi } from './utils';
 
-const Manage = ({ address, dark }: { address?: Address, dark?: boolean }) => {
+const Manage = ({ address, dark }: { address?: Address; dark?: boolean }) => {
   const [token, setToken] = useState<Address>();
   const [show, setShow] = useState<boolean>();
 
@@ -12,7 +13,7 @@ const Manage = ({ address, dark }: { address?: Address, dark?: boolean }) => {
     if (!address) return;
     setToken(address);
     setShow(!!address);
-  }, [])
+  }, []);
 
   const balance = useBalance({
     address: token,
@@ -22,84 +23,12 @@ const Manage = ({ address, dark }: { address?: Address, dark?: boolean }) => {
 
   const { data } = useReadContracts({
     contracts: [
-      {
-        address: token,
-        abi: [
-          {
-            type: 'function',
-            name: 'owner',
-            stateMutability: 'nonpayable',
-            inputs: [],
-            outputs: [{ type: 'address' }],
-          },
-        ],
-        functionName: 'owner',
-      },
-      {
-        address: token,
-        abi: [
-          {
-            type: 'function',
-            name: 'maxSupply',
-            stateMutability: 'nonpayable',
-            inputs: [],
-            outputs: [{ type: 'uint256' }],
-          },
-        ],
-        functionName: 'maxSupply',
-      },
-      {
-        address: token,
-        abi: [
-          {
-            type: 'function',
-            name: 'totalSupply',
-            stateMutability: 'nonpayable',
-            inputs: [],
-            outputs: [{ type: 'uint256' }],
-          },
-        ],
-        functionName: 'totalSupply',
-      },
-      {
-        address: token,
-        abi: [
-          {
-            type: 'function',
-            name: 'tokenPrice',
-            stateMutability: 'nonpayable',
-            inputs: [],
-            outputs: [{ type: 'uint256' }],
-          },
-        ],
-        functionName: 'tokenPrice',
-      },
-      {
-        address: token,
-        abi: [
-          {
-            type: 'function',
-            name: 'symbol',
-            stateMutability: 'nonpayable',
-            inputs: [],
-            outputs: [{ type: 'string' }],
-          },
-        ],
-        functionName: 'symbol',
-      },
-      {
-        address: token,
-        abi: [
-          {
-            type: 'function',
-            name: 'baseURI',
-            stateMutability: 'nonpayable',
-            inputs: [],
-            outputs: [{ type: 'string' }],
-          },
-        ],
-        functionName: 'baseURI',
-      },
+      { address: token, abi, functionName: 'owner' },
+      { address: token, abi, functionName: 'maxSupply' },
+      { address: token, abi, functionName: 'totalSupply' },
+      { address: token, abi, functionName: 'tokenPrice' },
+      { address: token, abi, functionName: 'symbol' },
+      { address: token, abi, functionName: 'baseURI' },
     ],
   });
 
@@ -110,15 +39,7 @@ const Manage = ({ address, dark }: { address?: Address, dark?: boolean }) => {
     if (!token) return;
 
     writeContract({
-      abi: [
-        {
-          type: 'function',
-          name: 'withdraw',
-          stateMutability: 'nonpayable',
-          inputs: [],
-          outputs: [],
-        },
-      ],
+      abi,
       address: token,
       functionName: 'withdraw',
     });
@@ -159,7 +80,7 @@ const Manage = ({ address, dark }: { address?: Address, dark?: boolean }) => {
             )}
           </div>
           <div className="flex items-center justify-between justify-items-center gap-2 rounded-lg border-2 border-cyan-400 p-4 dark:border-cyan-800">
-            <span>Balance:</span>{' '}
+            <span>Cap:</span>{' '}
             <span className="font-extrabold text-emerald-500 dark:text-emerald-700">
               {formatEther(balance.data?.value ?? 0n)} {balance.data?.symbol}
             </span>
